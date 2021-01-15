@@ -75,7 +75,7 @@ export default function Warning({ type, show, setShow, address }) {
                 href={'https://etherscan.io/address/' + address}
                 target="_blank"
               >
-                View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
+                View {type === 'token' ? 'token' : 'pool'} contract on Etherscan
               </Link>
             </Hover>
             <RowBetween style={{ marginTop: '20px' }}>
@@ -95,12 +95,12 @@ export default function Warning({ type, show, setShow, address }) {
                 href={'https://etherscan.io/address/' + address}
                 target="_blank"
               >
-                View {type === 'token' ? 'token' : 'pair'} contract on Etherscan
-              </Link>
+                View {type === 'token' ? 'token' : 'pool'} contract on Etherscan
+            </Link>
             </Hover>
             <ButtonDark color={'#f82d3a'} style={{ minWidth: '140px' }} onClick={() => setShow(false)}>
               I understand
-            </ButtonDark>
+          </ButtonDark>
           </RowBetween>
         )}
       </AutoColumn>

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect } from 'react'
 
-const UNISWAP = 'UNISWAP'
+const DEERFI = 'DEERFI'
 
 const VERSION = 'VERSION'
 const CURRENT_VERSION = 0
@@ -8,11 +8,11 @@ const LAST_SAVED = 'LAST_SAVED'
 const DISMISSED_PATHS = 'DISMISSED_PATHS'
 const SAVED_ACCOUNTS = 'SAVED_ACCOUNTS'
 const SAVED_TOKENS = 'SAVED_TOKENS'
-const SAVED_PAIRS = 'SAVED_PAIRS'
+const SAVED_POOLS = 'SAVED_POOLS'
 
 const DARK_MODE = 'DARK_MODE'
 
-const UPDATABLE_KEYS = [DARK_MODE, DISMISSED_PATHS, SAVED_ACCOUNTS, SAVED_PAIRS, SAVED_TOKENS]
+const UPDATABLE_KEYS = [DARK_MODE, DISMISSED_PATHS, SAVED_ACCOUNTS, SAVED_POOLS, SAVED_TOKENS]
 
 const UPDATE_KEY = 'UPDATE_KEY'
 
@@ -48,11 +48,11 @@ function init() {
     [DISMISSED_PATHS]: {},
     [SAVED_ACCOUNTS]: [],
     [SAVED_TOKENS]: {},
-    [SAVED_PAIRS]: {},
+    [SAVED_POOLS]: {},
   }
 
   try {
-    const parsed = JSON.parse(window.localStorage.getItem(UNISWAP))
+    const parsed = JSON.parse(window.localStorage.getItem(DEERFI))
     if (parsed[VERSION] !== CURRENT_VERSION) {
       // this is where we could run migration logic
       return defaultLocalStorage
@@ -82,7 +82,7 @@ export function Updater() {
   const [state] = useLocalStorageContext()
 
   useEffect(() => {
-    window.localStorage.setItem(UNISWAP, JSON.stringify({ ...state, [LAST_SAVED]: Math.floor(Date.now() / 1000) }))
+    window.localStorage.setItem(DEERFI, JSON.stringify({ ...state, [LAST_SAVED]: Math.floor(Date.now() / 1000) }))
   })
 
   return null
@@ -139,29 +139,27 @@ export function useSavedAccounts() {
   return [savedAccounts, addAccount, removeAccount]
 }
 
-export function useSavedPairs() {
+export function useSavedPools() {
   const [state, { updateKey }] = useLocalStorageContext()
-  const savedPairs = state?.[SAVED_PAIRS]
+  const savedPools = state?.[SAVED_POOLS]
 
-  function addPair(address, token0Address, token1Address, token0Symbol, token1Symbol) {
-    let newList = state?.[SAVED_PAIRS]
+  function addPool(address, tokenAddress, tokenSymbol) {
+    let newList = state?.[SAVED_POOLS]
     newList[address] = {
       address,
-      token0Address,
-      token1Address,
-      token0Symbol,
-      token1Symbol,
+      tokenAddress,
+      tokenSymbol,
     }
-    updateKey(SAVED_PAIRS, newList)
+    updateKey(SAVED_POOLS, newList)
   }
 
-  function removePair(address) {
-    let newList = state?.[SAVED_PAIRS]
+  function removePool(address) {
+    let newList = state?.[SAVED_POOLS]
     newList[address] = null
-    updateKey(SAVED_PAIRS, newList)
+    updateKey(SAVED_POOLS, newList)
   }
 
-  return [savedPairs, addPair, removePair]
+  return [savedPools, addPool, removePool]
 }
 
 export function useSavedTokens() {

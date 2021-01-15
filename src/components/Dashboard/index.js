@@ -21,7 +21,7 @@ const Dashboard = styled(Box)`
     grid-template-areas:
       /* "statsHeader statsHeader statsHeader" */
       'fill fill fill'
-      'pairHeader pairHeader pairHeader'
+      'poolHeader poolHeader poolHeader'
       'transactions2  transactions2 transactions2'
       'listOptions listOptions listOptions'
       'transactions  transactions transactions';

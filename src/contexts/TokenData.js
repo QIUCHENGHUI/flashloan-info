@@ -8,7 +8,7 @@ import {
   TOKENS_CURRENT,
   TOKENS_DYNAMIC,
   PRICES_BY_BLOCK,
-  PAIR_DATA,
+  POOL_DATA,
 } from '../apollo/queries'
 
 import { useEthPrice } from './GlobalData'
@@ -33,9 +33,9 @@ const UPDATE_TOKEN_TXNS = 'UPDATE_TOKEN_TXNS'
 const UPDATE_CHART_DATA = 'UPDATE_CHART_DATA'
 const UPDATE_PRICE_DATA = 'UPDATE_PRICE_DATA'
 const UPDATE_TOP_TOKENS = ' UPDATE_TOP_TOKENS'
-const UPDATE_ALL_PAIRS = 'UPDATE_ALL_PAIRS'
+const UPDATE_ALL_POOLS = 'UPDATE_ALL_POOLS'
 
-const TOKEN_PAIRS_KEY = 'TOKEN_PAIRS_KEY'
+const TOKEN_POOLS_KEY = 'TOKEN_POOLS_KEY'
 
 dayjs.extend(utc)
 
@@ -105,13 +105,13 @@ function reducer(state, { type, payload }) {
       }
     }
 
-    case UPDATE_ALL_PAIRS: {
-      const { address, allPairs } = payload
+    case UPDATE_ALL_POOLS: {
+      const { address, allPools } = payload
       return {
         ...state,
         [address]: {
           ...state?.[address],
-          [TOKEN_PAIRS_KEY]: allPairs,
+          [TOKEN_POOLS_KEY]: allPools,
         },
       }
     }
@@ -156,10 +156,10 @@ export default function Provider({ children }) {
     })
   }, [])
 
-  const updateAllPairs = useCallback((address, allPairs) => {
+  const updateAllPools = useCallback((address, allPools) => {
     dispatch({
-      type: UPDATE_ALL_PAIRS,
-      payload: { address, allPairs },
+      type: UPDATE_ALL_POOLS,
+      payload: { address, allPools },
     })
   }, [])
 
@@ -180,11 +180,11 @@ export default function Provider({ children }) {
             updateTokenTxns,
             updateChartData,
             updateTopTokens,
-            updateAllPairs,
+            updateAllPools,
             updatePriceData,
           },
         ],
-        [state, update, updateTokenTxns, updateChartData, updateTopTokens, updateAllPairs, updatePriceData]
+        [state, update, updateTokenTxns, updateChartData, updateTopTokens, updateAllPools, updatePriceData]
       )}
     >
       {children}
@@ -296,10 +296,10 @@ const getTopTokens = async (ethPrice, ethPriceOld) => {
           // HOTFIX for Aave
           if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
             const aaveData = await client.query({
-              query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
+              query: POOL_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
               fetchPolicy: 'cache-first',
             })
-            const result = aaveData.data.pairs[0]
+            const result = aaveData.data.pools[0]
             data.totalLiquidityUSD = parseFloat(result.reserveUSD) / 2
             data.liquidityChangeUSD = 0
             data.priceChangeUSD = 0
@@ -424,10 +424,10 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
     // HOTFIX for Aave
     if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
       const aaveData = await client.query({
-        query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
+        query: POOL_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
         fetchPolicy: 'cache-first',
       })
-      const result = aaveData.data.pairs[0]
+      const result = aaveData.data.pools[0]
       data.totalLiquidityUSD = parseFloat(result.reserveUSD) / 2
       data.liquidityChangeUSD = 0
       data.priceChangeUSD = 0
@@ -438,33 +438,33 @@ const getTokenData = async (address, ethPrice, ethPriceOld) => {
   return data
 }
 
-const getTokenTransactions = async (allPairsFormatted) => {
+const getTokenTransactions = async (allPoolsFormatted) => {
   const transactions = {}
   try {
     let result = await client.query({
       query: FILTERED_TRANSACTIONS,
       variables: {
-        allPairs: allPairsFormatted,
+        allPools: allPoolsFormatted,
       },
       fetchPolicy: 'cache-first',
     })
     transactions.mints = result.data.mints
     transactions.burns = result.data.burns
-    transactions.swaps = result.data.swaps
+    transactions.flashLoans = result.data.flashLoans
   } catch (e) {
     console.log(e)
   }
   return transactions
 }
 
-const getTokenPairs = async (tokenAddress) => {
+const getTokenPools = async (tokenAddress) => {
   try {
     // fetch all current and historical data
     let result = await client.query({
       query: TOKEN_DATA(tokenAddress),
       fetchPolicy: 'cache-first',
     })
-    return result.data?.['pairs0'].concat(result.data?.['pairs1'])
+    return result.data?.['pools0'].concat(result.data?.['pools1'])
   } catch (e) {
     console.log(e)
   }
@@ -586,7 +586,7 @@ const getTokenChartData = async (tokenAddress) => {
     let timestamp = data[0] && data[0].date ? data[0].date : startTime
     let latestLiquidityUSD = data[0] && data[0].totalLiquidityUSD
     let latestPriceUSD = data[0] && data[0].priceUSD
-    let latestPairDatas = data[0] && data[0].mostLiquidPairs
+    let latestPoolDatas = data[0] && data[0].mostLiquidPools
     let index = 1
     while (timestamp < utcEndTime.startOf('minute').unix() - oneDay) {
       const nextDay = timestamp + oneDay
@@ -598,12 +598,12 @@ const getTokenChartData = async (tokenAddress) => {
           dailyVolumeUSD: 0,
           priceUSD: latestPriceUSD,
           totalLiquidityUSD: latestLiquidityUSD,
-          mostLiquidPairs: latestPairDatas,
+          mostLiquidPools: latestPoolDatas,
         })
       } else {
         latestLiquidityUSD = dayIndexArray[index].totalLiquidityUSD
         latestPriceUSD = dayIndexArray[index].priceUSD
-        latestPairDatas = dayIndexArray[index].mostLiquidPairs
+        latestPoolDatas = dayIndexArray[index].mostLiquidPools
         index = index + 1
       }
       timestamp = nextDay
@@ -620,7 +620,7 @@ export function Updater() {
   const [ethPrice, ethPriceOld] = useEthPrice()
   useEffect(() => {
     async function getData() {
-      // get top pairs for overview list
+      // get top pools for overview list
       let topTokens = await getTopTokens(ethPrice, ethPriceOld)
       topTokens && updateTopTokens(topTokens)
     }
@@ -649,41 +649,41 @@ export function useTokenTransactions(tokenAddress) {
   const [state, { updateTokenTxns }] = useTokenDataContext()
   const tokenTxns = state?.[tokenAddress]?.txns
 
-  const allPairsFormatted =
+  const allPoolsFormatted =
     state[tokenAddress] &&
-    state[tokenAddress].TOKEN_PAIRS_KEY &&
-    state[tokenAddress].TOKEN_PAIRS_KEY.map((pair) => {
-      return pair.id
+    state[tokenAddress].TOKEN_POOLS_KEY &&
+    state[tokenAddress].TOKEN_POOLS_KEY.map((pool) => {
+      return pool.id
     })
 
   useEffect(() => {
     async function checkForTxns() {
-      if (!tokenTxns && allPairsFormatted) {
-        let transactions = await getTokenTransactions(allPairsFormatted)
+      if (!tokenTxns && allPoolsFormatted) {
+        let transactions = await getTokenTransactions(allPoolsFormatted)
         updateTokenTxns(tokenAddress, transactions)
       }
     }
     checkForTxns()
-  }, [tokenTxns, tokenAddress, updateTokenTxns, allPairsFormatted])
+  }, [tokenTxns, tokenAddress, updateTokenTxns, allPoolsFormatted])
 
   return tokenTxns || []
 }
 
-export function useTokenPairs(tokenAddress) {
-  const [state, { updateAllPairs }] = useTokenDataContext()
-  const tokenPairs = state?.[tokenAddress]?.[TOKEN_PAIRS_KEY]
+export function useTokenPools(tokenAddress) {
+  const [state, { updateAllPools }] = useTokenDataContext()
+  const tokenPools = state?.[tokenAddress]?.[TOKEN_POOLS_KEY]
 
   useEffect(() => {
     async function fetchData() {
-      let allPairs = await getTokenPairs(tokenAddress)
-      updateAllPairs(tokenAddress, allPairs)
+      let allPools = await getTokenPools(tokenAddress)
+      updateAllPools(tokenAddress, allPools)
     }
-    if (!tokenPairs && isAddress(tokenAddress)) {
+    if (!tokenPools && isAddress(tokenAddress)) {
       fetchData()
     }
-  }, [tokenAddress, tokenPairs, updateAllPairs])
+  }, [tokenAddress, tokenPools, updateAllPools])
 
-  return tokenPairs || []
+  return tokenPools || []
 }
 
 export function useTokenChartData(tokenAddress) {

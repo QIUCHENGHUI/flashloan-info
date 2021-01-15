@@ -15,19 +15,19 @@ import {
   GLOBAL_TXNS,
   GLOBAL_CHART,
   ETH_PRICE,
-  ALL_PAIRS,
+  ALL_POOLS,
   ALL_TOKENS,
-  TOP_LPS_PER_PAIRS,
+  TOP_LPS_PER_POOLS,
 } from '../apollo/queries'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
-import { useAllPairData } from './PairData'
+import { useAllPoolData } from './PoolData'
 const UPDATE = 'UPDATE'
 const UPDATE_TXNS = 'UPDATE_TXNS'
 const UPDATE_CHART = 'UPDATE_CHART'
 const UPDATE_ETH_PRICE = 'UPDATE_ETH_PRICE'
 const ETH_PRICE_KEY = 'ETH_PRICE_KEY'
-const UPDATE_ALL_PAIRS_IN_UNISWAP = 'UPDAUPDATE_ALL_PAIRS_IN_UNISWAPTE_TOP_PAIRS'
-const UPDATE_ALL_TOKENS_IN_UNISWAP = 'UPDATE_ALL_TOKENS_IN_UNISWAP'
+const UPDATE_ALL_POOLS_IN_DEERFI = 'UPDAUPDATE_ALL_POOLS_IN_DEERFITE_TOP_POOLS'
+const UPDATE_ALL_TOKENS_IN_DEERFI = 'UPDATE_ALL_TOKENS_IN_DEERFI'
 const UPDATE_TOP_LPS = 'UPDATE_TOP_LPS'
 
 // format dayjs with the libraries that we need
@@ -75,15 +75,15 @@ function reducer(state, { type, payload }) {
       }
     }
 
-    case UPDATE_ALL_PAIRS_IN_UNISWAP: {
-      const { allPairs } = payload
+    case UPDATE_ALL_POOLS_IN_DEERFI: {
+      const { allPools } = payload
       return {
         ...state,
-        allPairs,
+        allPools,
       }
     }
 
-    case UPDATE_ALL_TOKENS_IN_UNISWAP: {
+    case UPDATE_ALL_TOKENS_IN_DEERFI: {
       const { allTokens } = payload
       return {
         ...state,
@@ -145,18 +145,18 @@ export default function Provider({ children }) {
     })
   }, [])
 
-  const updateAllPairsInUniswap = useCallback((allPairs) => {
+  const updateAllPoolsInDeerfi = useCallback((allPools) => {
     dispatch({
-      type: UPDATE_ALL_PAIRS_IN_UNISWAP,
+      type: UPDATE_ALL_POOLS_IN_DEERFI,
       payload: {
-        allPairs,
+        allPools,
       },
     })
   }, [])
 
-  const updateAllTokensInUniswap = useCallback((allTokens) => {
+  const updateAllTokensInDeerfi = useCallback((allTokens) => {
     dispatch({
-      type: UPDATE_ALL_TOKENS_IN_UNISWAP,
+      type: UPDATE_ALL_TOKENS_IN_DEERFI,
       payload: {
         allTokens,
       },
@@ -182,8 +182,8 @@ export default function Provider({ children }) {
             updateChart,
             updateEthPrice,
             updateTopLps,
-            updateAllPairsInUniswap,
-            updateAllTokensInUniswap,
+            updateAllPoolsInDeerfi,
+            updateAllTokensInDeerfi,
           },
         ],
         [
@@ -193,8 +193,8 @@ export default function Provider({ children }) {
           updateTopLps,
           updateChart,
           updateEthPrice,
-          updateAllPairsInUniswap,
-          updateAllTokensInUniswap,
+          updateAllPoolsInDeerfi,
+          updateAllTokensInDeerfi,
         ]
       )}
     >
@@ -237,32 +237,32 @@ async function getGlobalData(ethPrice, oldEthPrice) {
       query: GLOBAL_DATA(),
       fetchPolicy: 'cache-first',
     })
-    data = result.data.uniswapFactories[0]
+    data = result.data.flashLoanFactories[0]
 
     // fetch the historical data
     let oneDayResult = await client.query({
       query: GLOBAL_DATA(oneDayBlock?.number),
       fetchPolicy: 'cache-first',
     })
-    oneDayData = oneDayResult.data.uniswapFactories[0]
+    oneDayData = oneDayResult.data.flashLoanFactories[0]
 
     let twoDayResult = await client.query({
       query: GLOBAL_DATA(twoDayBlock?.number),
       fetchPolicy: 'cache-first',
     })
-    twoDayData = twoDayResult.data.uniswapFactories[0]
+    twoDayData = twoDayResult.data.flashLoanFactories[0]
 
     let oneWeekResult = await client.query({
       query: GLOBAL_DATA(oneWeekBlock?.number),
       fetchPolicy: 'cache-first',
     })
-    const oneWeekData = oneWeekResult.data.uniswapFactories[0]
+    const oneWeekData = oneWeekResult.data.flashLoanFactories[0]
 
     let twoWeekResult = await client.query({
       query: GLOBAL_DATA(twoWeekBlock?.number),
       fetchPolicy: 'cache-first',
     })
-    const twoWeekData = twoWeekResult.data.uniswapFactories[0]
+    const twoWeekData = twoWeekResult.data.flashLoanFactories[0]
 
     if (data && oneDayData && twoDayData && twoWeekData) {
       let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -329,8 +329,8 @@ const getChartData = async (oldestDateToFetch) => {
         fetchPolicy: 'cache-first',
       })
       skip += 1000
-      data = data.concat(result.data.uniswapDayDatas)
-      if (result.data.uniswapDayDatas.length < 1000) {
+      data = data.concat(result.data.flashLoanDayDatas)
+      if (result.data.flashLoanDayDatas.length < 1000) {
         allFound = true
       }
     }
@@ -406,7 +406,7 @@ const getGlobalTransactions = async () => {
     })
     transactions.mints = []
     transactions.burns = []
-    transactions.swaps = []
+    transactions.flashLoans = []
     result?.data?.transactions &&
       result.data.transactions.map((transaction) => {
         if (transaction.mints.length > 0) {
@@ -419,9 +419,9 @@ const getGlobalTransactions = async () => {
             return transactions.burns.push(burn)
           })
         }
-        if (transaction.swaps.length > 0) {
-          transaction.swaps.map((swap) => {
-            return transactions.swaps.push(swap)
+        if (transaction.flashLoans.length > 0) {
+          transaction.flashLoans.map((flashLoan) => {
+            return transactions.flashLoans.push(flashLoan)
           })
         }
         return true
@@ -466,41 +466,41 @@ const getEthPrice = async () => {
   return [ethPrice, ethPriceOneDay, priceChangeETH]
 }
 
-const PAIRS_TO_FETCH = 500
+const POOLS_TO_FETCH = 500
 const TOKENS_TO_FETCH = 500
 
 /**
- * Loop through every pair on uniswap, used for search
+ * Loop through every pool on deerfi, used for search
  */
-async function getAllPairsOnUniswap() {
+async function getAllPoolsOnDeerfi() {
   try {
     let allFound = false
-    let pairs = []
+    let pools = []
     let skipCount = 0
     while (!allFound) {
       let result = await client.query({
-        query: ALL_PAIRS,
+        query: ALL_POOLS,
         variables: {
           skip: skipCount,
         },
         fetchPolicy: 'cache-first',
       })
-      skipCount = skipCount + PAIRS_TO_FETCH
-      pairs = pairs.concat(result?.data?.pairs)
-      if (result?.data?.pairs.length < PAIRS_TO_FETCH || pairs.length > PAIRS_TO_FETCH) {
+      skipCount = skipCount + POOLS_TO_FETCH
+      pools = pools.concat(result?.data?.pools)
+      if (result?.data?.pools.length < POOLS_TO_FETCH || pools.length > POOLS_TO_FETCH) {
         allFound = true
       }
     }
-    return pairs
+    return pools
   } catch (e) {
     console.log(e)
   }
 }
 
 /**
- * Loop through every token on uniswap, used for search
+ * Loop through every token on deerfi, used for search
  */
-async function getAllTokensOnUniswap() {
+async function getAllTokensOnDeerfi() {
   try {
     let allFound = false
     let skipCount = 0
@@ -526,10 +526,10 @@ async function getAllTokensOnUniswap() {
 }
 
 /**
- * Hook that fetches overview data, plus all tokens and pairs for search
+ * Hook that fetches overview data, plus all tokens and pools for search
  */
 export function useGlobalData() {
-  const [state, { update, updateAllPairsInUniswap, updateAllTokensInUniswap }] = useGlobalDataContext()
+  const [state, { update, updateAllPoolsInDeerfi, updateAllTokensInDeerfi }] = useGlobalDataContext()
   const [ethPrice, oldEthPrice] = useEthPrice()
 
   const data = state?.globalData
@@ -539,16 +539,16 @@ export function useGlobalData() {
       let globalData = await getGlobalData(ethPrice, oldEthPrice)
       globalData && update(globalData)
 
-      let allPairs = await getAllPairsOnUniswap()
-      updateAllPairsInUniswap(allPairs)
+      let allPools = await getAllPoolsOnDeerfi()
+      updateAllPoolsInDeerfi(allPools)
 
-      let allTokens = await getAllTokensOnUniswap()
-      updateAllTokensInUniswap(allTokens)
+      let allTokens = await getAllTokensOnDeerfi()
+      updateAllTokensInDeerfi(allTokens)
     }
     if (!data && ethPrice && oldEthPrice) {
       fetchData()
     }
-  }, [ethPrice, oldEthPrice, update, data, updateAllPairsInUniswap, updateAllTokensInUniswap])
+  }, [ethPrice, oldEthPrice, update, data, updateAllPoolsInDeerfi, updateAllTokensInDeerfi])
 
   return data || {}
 }
@@ -624,14 +624,14 @@ export function useEthPrice() {
   return [ethPrice, ethPriceOld]
 }
 
-export function useAllPairsInUniswap() {
+export function useAllPoolsInDeerfi() {
   const [state] = useGlobalDataContext()
-  let allPairs = state?.allPairs
+  let allPools = state?.allPools
 
-  return allPairs || []
+  return allPools || []
 }
 
-export function useAllTokensInUniswap() {
+export function useAllTokensInDeerfi() {
   const [state] = useGlobalDataContext()
   let allTokens = state?.allTokens
 
@@ -646,24 +646,24 @@ export function useTopLps() {
   const [state, { updateTopLps }] = useGlobalDataContext()
   let topLps = state?.topLps
 
-  const allPairs = useAllPairData()
+  const allPools = useAllPoolData()
 
   useEffect(() => {
     async function fetchData() {
       // get top 20 by reserves
-      let topPairs = Object.keys(allPairs)
-        ?.sort((a, b) => parseFloat(allPairs[a].reserveUSD > allPairs[b].reserveUSD ? -1 : 1))
+      let topPools = Object.keys(allPools)
+        ?.sort((a, b) => parseFloat(allPools[a].reserveUSD > allPools[b].reserveUSD ? -1 : 1))
         ?.slice(0, 99)
-        .map((pair) => pair)
+        .map((pool) => pool)
 
       let topLpLists = await Promise.all(
-        topPairs.map(async (pair) => {
+        topPools.map(async (pool) => {
           // for each one, fetch top LPs
           try {
             const { data: results } = await client.query({
-              query: TOP_LPS_PER_PAIRS,
+              query: TOP_LPS_PER_POOLS,
               variables: {
-                pair: pair.toString(),
+                pool: pool.toString(),
               },
               fetchPolicy: 'cache-first',
             })
@@ -680,16 +680,15 @@ export function useTopLps() {
         .filter((i) => !!i) // check for ones not fetched correctly
         .map((list) => {
           return list.map((entry) => {
-            const pairData = allPairs[entry.pair.id]
+            const poolData = allPools[entry.pool.id]
             return topLps.push({
               user: entry.user,
-              pairName: pairData.token0.symbol + '-' + pairData.token1.symbol,
-              pairAddress: entry.pair.id,
-              token0: pairData.token0.id,
-              token1: pairData.token1.id,
+              poolName: poolData.token.symbol + ' Pool',
+              poolAddress: entry.pool.id,
+              token: poolData.token.id,
               usd:
-                (parseFloat(entry.liquidityTokenBalance) / parseFloat(pairData.totalSupply)) *
-                parseFloat(pairData.reserveUSD),
+                (parseFloat(entry.liquidityTokenBalance) / parseFloat(poolData.totalSupply)) *
+                parseFloat(poolData.reserveUSD),
             })
           })
         })
@@ -699,7 +698,7 @@ export function useTopLps() {
       updateTopLps(shorter)
     }
 
-    if (!topLps && allPairs && Object.keys(allPairs).length > 0) {
+    if (!topLps && allPools && Object.keys(allPools).length > 0) {
       fetchData()
     }
   })

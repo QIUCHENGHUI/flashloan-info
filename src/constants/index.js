@@ -1,4 +1,4 @@
-export const FACTORY_ADDRESS = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
+export const FACTORY_ADDRESS = '0x5cE49e786DE3095Be065005Da519aB3BB4F0781E'
 
 export const BUNDLE_ID = '1'
 
@@ -10,7 +10,7 @@ export const timeframeOptions = {
   ALL_TIME: 'All time',
 }
 
-// token list urls to fetch tokens from - use for warnings on tokens and pairs
+// token list urls to fetch tokens from - use for warnings on tokens and pools
 export const SUPPORTED_LIST_URLS__NO_ENS = [
   'https://gateway.ipfs.io/ipns/tokens.uniswap.org',
   'https://www.coingecko.com/tokens_list/uniswap/defi_100/v_0_0_0.json',
@@ -24,8 +24,8 @@ export const OVERVIEW_TOKEN_BLACKLIST = [
   '0xfc989fbb6b3024de5ca0144dc23c18a063942ac1',
 ]
 
-// pair blacklist
-export const PAIR_BLACKLIST = ['0xb6a741f37d6e455ebcc9f17e2c16d0586c3f57a5']
+// pool blacklist
+export const POOL_BLACKLIST = ['0xb6a741f37d6e455ebcc9f17e2c16d0586c3f57a5']
 
 /**
  * For tokens that cause erros on fee calculations

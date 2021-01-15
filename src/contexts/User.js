@@ -1,18 +1,18 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect, useState } from 'react'
-import { useAllPairData, usePairData } from './PairData'
+import { useAllPoolData, usePoolData } from './PoolData'
 import { client, stakingClient } from '../apollo/client'
 import {
   USER_TRANSACTIONS,
   USER_POSITIONS,
   USER_HISTORY,
-  PAIR_DAY_DATA_BULK,
+  POOL_DAY_DATA_BULK,
   MINING_POSITIONS,
 } from '../apollo/queries'
 import { useTimeframe, useStartTimestamp } from './Application'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useEthPrice } from './GlobalData'
-import { getLPReturnsOnPair, getHistoricalPairReturns } from '../utils/returns'
+import { getLPReturnsOnPool, getHistoricalPoolReturns } from '../utils/returns'
 import { timeframeOptions } from '../constants'
 
 dayjs.extend(utc)
@@ -21,13 +21,13 @@ const UPDATE_TRANSACTIONS = 'UPDATE_TRANSACTIONS'
 const UPDATE_POSITIONS = 'UPDATE_POSITIONS '
 const UPDATE_MINING_POSITIONS = 'UPDATE_MINING_POSITIONS'
 const UPDATE_USER_POSITION_HISTORY = 'UPDATE_USER_POSITION_HISTORY'
-const UPDATE_USER_PAIR_RETURNS = 'UPDATE_USER_PAIR_RETURNS'
+const UPDATE_USER_POOL_RETURNS = 'UPDATE_USER_POOL_RETURNS'
 
 const TRANSACTIONS_KEY = 'TRANSACTIONS_KEY'
 const POSITIONS_KEY = 'POSITIONS_KEY'
 const MINING_POSITIONS_KEY = 'MINING_POSITIONS_KEY'
 const USER_SNAPSHOTS = 'USER_SNAPSHOTS'
-const USER_PAIR_RETURNS_KEY = 'USER_PAIR_RETURNS_KEY'
+const USER_POOL_RETURNS_KEY = 'USER_POOL_RETURNS_KEY'
 
 const UserContext = createContext()
 
@@ -69,15 +69,15 @@ function reducer(state, { type, payload }) {
       }
     }
 
-    case UPDATE_USER_PAIR_RETURNS: {
-      const { account, pairAddress, data } = payload
+    case UPDATE_USER_POOL_RETURNS: {
+      const { account, poolAddress, data } = payload
       return {
         ...state,
         [account]: {
           ...state?.[account],
-          [USER_PAIR_RETURNS_KEY]: {
-            ...state?.[account]?.[USER_PAIR_RETURNS_KEY],
-            [pairAddress]: data,
+          [USER_POOL_RETURNS_KEY]: {
+            ...state?.[account]?.[USER_POOL_RETURNS_KEY],
+            [poolAddress]: data,
           },
         },
       }
@@ -134,12 +134,12 @@ export default function Provider({ children }) {
     })
   }, [])
 
-  const updateUserPairReturns = useCallback((account, pairAddress, data) => {
+  const updateUserPoolReturns = useCallback((account, poolAddress, data) => {
     dispatch({
-      type: UPDATE_USER_PAIR_RETURNS,
+      type: UPDATE_USER_POOL_RETURNS,
       payload: {
         account,
-        pairAddress,
+        poolAddress,
         data,
       },
     })
@@ -150,9 +150,9 @@ export default function Provider({ children }) {
       value={useMemo(
         () => [
           state,
-          { updateTransactions, updatePositions, updateMiningPositions, updateUserSnapshots, updateUserPairReturns },
+          { updateTransactions, updatePositions, updateMiningPositions, updateUserSnapshots, updateUserPoolReturns },
         ],
-        [state, updateTransactions, updatePositions, updateMiningPositions, updateUserSnapshots, updateUserPairReturns]
+        [state, updateTransactions, updatePositions, updateMiningPositions, updateUserSnapshots, updateUserPoolReturns]
       )}
     >
       {children}
@@ -241,46 +241,46 @@ export function useUserSnapshots(account) {
  * @param {*} account
  */
 export function useUserPositionChart(position, account) {
-  const pairAddress = position?.pair?.id
-  const [state, { updateUserPairReturns }] = useUserContext()
+  const poolAddress = position?.pool?.id
+  const [state, { updateUserPoolReturns }] = useUserContext()
 
   // get oldest date of data to fetch
   const startDateTimestamp = useStartTimestamp()
 
-  // get users adds and removes on this pair
+  // get users adds and removes on this pool
   const snapshots = useUserSnapshots(account)
-  const pairSnapshots =
+  const poolSnapshots =
     snapshots &&
     position &&
     snapshots.filter((currentSnapshot) => {
-      return currentSnapshot.pair.id === position.pair.id
+      return currentSnapshot.pool.id === position.pool.id
     })
 
   // get data needed for calculations
-  const currentPairData = usePairData(pairAddress)
+  const currentPoolData = usePoolData(poolAddress)
   const [currentETHPrice] = useEthPrice()
 
   // formatetd array to return for chart data
-  const formattedHistory = state?.[account]?.[USER_PAIR_RETURNS_KEY]?.[pairAddress]
+  const formattedHistory = state?.[account]?.[USER_POOL_RETURNS_KEY]?.[poolAddress]
 
   useEffect(() => {
     async function fetchData() {
-      let fetchedData = await getHistoricalPairReturns(
+      let fetchedData = await getHistoricalPoolReturns(
         startDateTimestamp,
-        currentPairData,
-        pairSnapshots,
+        currentPoolData,
+        poolSnapshots,
         currentETHPrice
       )
-      updateUserPairReturns(account, pairAddress, fetchedData)
+      updateUserPoolReturns(account, poolAddress, fetchedData)
     }
     if (
       account &&
       startDateTimestamp &&
-      pairSnapshots &&
+      poolSnapshots &&
       !formattedHistory &&
-      currentPairData &&
-      Object.keys(currentPairData).length > 0 &&
-      pairAddress &&
+      currentPoolData &&
+      Object.keys(currentPoolData).length > 0 &&
+      poolAddress &&
       currentETHPrice
     ) {
       fetchData()
@@ -288,13 +288,13 @@ export function useUserPositionChart(position, account) {
   }, [
     account,
     startDateTimestamp,
-    pairSnapshots,
+    poolSnapshots,
     formattedHistory,
-    pairAddress,
-    currentPairData,
+    poolAddress,
+    currentPoolData,
     currentETHPrice,
-    updateUserPairReturns,
-    position.pair.id,
+    updateUserPoolReturns,
+    position.pool.id,
   ])
 
   return formattedHistory
@@ -356,21 +356,21 @@ export function useUserLiquidityChart(account) {
         dayIndex = dayIndex + 1
       }
 
-      const pairs = history.reduce((pairList, position) => {
-        return [...pairList, position.pair.id]
+      const pools = history.reduce((poolList, position) => {
+        return [...poolList, position.pool.id]
       }, [])
 
-      // get all day datas where date is in this list, and pair is in pair list
+      // get all day datas where date is in this list, and pool is in pool list
       let {
-        data: { pairDayDatas },
+        data: { poolDayDatas },
       } = await client.query({
-        query: PAIR_DAY_DATA_BULK(pairs, startDateTimestamp),
+        query: POOL_DAY_DATA_BULK(pools, startDateTimestamp),
       })
 
       const formattedHistory = []
 
-      // map of current pair => ownership %
-      const ownershipPerPair = {}
+      // map of current pool => ownership %
+      const ownershipPerPool = {}
       for (const index in dayTimestamps) {
         const dayTimestamp = dayTimestamps[index]
         const timestampCeiling = dayTimestamp + 86400
@@ -381,31 +381,31 @@ export function useUserLiquidityChart(account) {
         })
         for (const index in relevantPositions) {
           const position = relevantPositions[index]
-          // case where pair not added yet
-          if (!ownershipPerPair[position.pair.id]) {
-            ownershipPerPair[position.pair.id] = {
+          // case where pool not added yet
+          if (!ownershipPerPool[position.pool.id]) {
+            ownershipPerPool[position.pool.id] = {
               lpTokenBalance: position.liquidityTokenBalance,
               timestamp: position.timestamp,
             }
           }
-          // case where more recent timestamp is found for pair
-          if (ownershipPerPair[position.pair.id] && ownershipPerPair[position.pair.id].timestamp < position.timestamp) {
-            ownershipPerPair[position.pair.id] = {
+          // case where more recent timestamp is found for pool
+          if (ownershipPerPool[position.pool.id] && ownershipPerPool[position.pool.id].timestamp < position.timestamp) {
+            ownershipPerPool[position.pool.id] = {
               lpTokenBalance: position.liquidityTokenBalance,
               timestamp: position.timestamp,
             }
           }
         }
 
-        const relavantDayDatas = Object.keys(ownershipPerPair).map((pairAddress) => {
+        const relavantDayDatas = Object.keys(ownershipPerPool).map((poolAddress) => {
           // find last day data after timestamp update
-          const dayDatasForThisPair = pairDayDatas.filter((dayData) => {
-            return dayData.pairAddress === pairAddress
+          const dayDatasForThisPool = poolDayDatas.filter((dayData) => {
+            return dayData.poolAddress === poolAddress
           })
-          // find the most recent reference to pair liquidity data
-          let mostRecent = dayDatasForThisPair[0]
-          for (const index in dayDatasForThisPair) {
-            const dayData = dayDatasForThisPair[index]
+          // find the most recent reference to pool liquidity data
+          let mostRecent = dayDatasForThisPool[0]
+          for (const index in dayDatasForThisPool) {
+            const dayData = dayDatasForThisPool[index]
             if (dayData.date < dayTimestamp && dayData.date > mostRecent.date) {
               mostRecent = dayData
             }
@@ -413,14 +413,14 @@ export function useUserLiquidityChart(account) {
           return mostRecent
         })
 
-        // now cycle through pair day datas, for each one find usd value = ownership[address] * reserveUSD
+        // now cycle through pool day datas, for each one find usd value = ownership[address] * reserveUSD
         const dailyUSD = relavantDayDatas.reduce((totalUSD, dayData) => {
           if (dayData) {
             return (totalUSD =
               totalUSD +
-              (ownershipPerPair[dayData.pairAddress]
-                ? (parseFloat(ownershipPerPair[dayData.pairAddress].lpTokenBalance) / parseFloat(dayData.totalSupply)) *
-                  parseFloat(dayData.reserveUSD)
+              (ownershipPerPool[dayData.poolAddress]
+                ? (parseFloat(ownershipPerPool[dayData.poolAddress].lpTokenBalance) / parseFloat(dayData.totalSupply)) *
+                parseFloat(dayData.reserveUSD)
                 : 0))
           } else {
             return totalUSD
@@ -463,7 +463,7 @@ export function useUserPositions(account) {
         if (result?.data?.liquidityPositions) {
           let formattedPositions = await Promise.all(
             result?.data?.liquidityPositions.map(async (positionData) => {
-              const returnData = await getLPReturnsOnPair(account, positionData.pair, ethPrice, snapshots)
+              const returnData = await getLPReturnsOnPool(account, positionData.pool, ethPrice, snapshots)
               return {
                 ...positionData,
                 ...returnData,
@@ -486,7 +486,7 @@ export function useUserPositions(account) {
 
 export function useMiningPositions(account) {
   const [state, { updateMiningPositions }] = useUserContext()
-  const allPairData = useAllPairData()
+  const allPoolData = useAllPoolData()
   const miningPositions = state?.[account]?.[MINING_POSITIONS_KEY]
 
   const snapshots = useUserSnapshots(account)
@@ -504,8 +504,8 @@ export function useMiningPositions(account) {
         }
         miningPositionData = result.data.user.miningPosition
         for (const miningPosition of miningPositionData) {
-          const pairAddress = miningPosition.miningPool.pair.id
-          miningPosition.pairData = allPairData[pairAddress]
+          const poolAddress = miningPosition.miningPool.pool.id
+          miningPosition.poolData = allPoolData[poolAddress]
         }
         updateMiningPositions(account, miningPositionData)
       } catch (e) {
@@ -516,6 +516,6 @@ export function useMiningPositions(account) {
     if (!miningPositions && account && snapshots) {
       fetchData(account)
     }
-  }, [account, miningPositions, updateMiningPositions, snapshots, allPairData])
+  }, [account, miningPositions, updateMiningPositions, snapshots, allPoolData])
   return miningPositions
 }

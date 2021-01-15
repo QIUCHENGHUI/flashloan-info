@@ -6,13 +6,11 @@ import { RowBetween, AutoRow } from '../Row'
 import { toK, toNiceDate, toNiceDateYear, formattedNum, getTimeframe } from '../../utils'
 import { OptionButton } from '../ButtonStyled'
 import { darken } from 'polished'
-import { usePairChartData, useHourlyRateData, usePairData } from '../../contexts/PairData'
+import { usePoolChartData } from '../../contexts/PoolData'
 import { timeframeOptions } from '../../constants'
 import { useMedia } from 'react-use'
 import { EmptyCard } from '..'
 import DropdownSelect from '../DropdownSelect'
-import CandleStickChart from '../CandleChart'
-import LocalLoader from '../LocalLoader'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
 
 const ChartWrapper = styled.div`
@@ -38,7 +36,7 @@ const CHART_VIEW = {
   RATE1: 'Rate 1',
 }
 
-const PairChart = ({ address, color, base0, base1 }) => {
+const PoolChart = ({ address, color, base0, base1 }) => {
   const [chartFilter, setChartFilter] = useState(CHART_VIEW.LIQUIDITY)
 
   const [timeWindow, setTimeWindow] = useState(timeframeOptions.MONTH)
@@ -63,18 +61,8 @@ const PairChart = ({ address, color, base0, base1 }) => {
     return () => window.removeEventListener('resize', handleResize)
   }, [height, isClient, width]) // Empty array ensures that effect is only run on mount and unmount
 
-  // get data for pair, and rates
-  const pairData = usePairData(address)
-  let chartData = usePairChartData(address)
-  const hourlyData = useHourlyRateData(address, timeWindow)
-  const hourlyRate0 = hourlyData && hourlyData[0]
-  const hourlyRate1 = hourlyData && hourlyData[1]
-
-  // formatted symbols for overflow
-  const formattedSymbol0 =
-    pairData?.token0?.symbol.length > 6 ? pairData?.token0?.symbol.slice(0, 5) + '...' : pairData?.token0?.symbol
-  const formattedSymbol1 =
-    pairData?.token1?.symbol.length > 6 ? pairData?.token1?.symbol.slice(0, 5) + '...' : pairData?.token1?.symbol
+  // get data for pool, and rates
+  let chartData = usePoolChartData(address)
 
   const below1600 = useMedia('(max-width: 1600px)')
   const below1080 = useMedia('(max-width: 1080px)')
@@ -89,26 +77,6 @@ const PairChart = ({ address, color, base0, base1 }) => {
         <EmptyCard height="300px">No historical data yet.</EmptyCard>{' '}
       </ChartWrapper>
     )
-  }
-
-  /**
-   * Used to format values on chart on scroll
-   * Needs to be raw html for chart API to parse styles
-   * @param {*} val
-   */
-  function valueFormatter(val) {
-    if (chartFilter === CHART_VIEW.RATE0) {
-      return (
-        formattedNum(val) +
-        `<span style="font-size: 12px; margin-left: 4px;">${formattedSymbol1}/${formattedSymbol0}<span>`
-      )
-    }
-    if (chartFilter === CHART_VIEW.RATE1) {
-      return (
-        formattedNum(val) +
-        `<span style="font-size: 12px; margin-left: 4px;">${formattedSymbol0}/${formattedSymbol1}<span>`
-      )
-    }
   }
 
   const aspect = below1080 ? 60 / 20 : below1600 ? 60 / 28 : 60 / 22
@@ -131,7 +99,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
               }}
             >
               Liquidity
-            </OptionButton>
+          </OptionButton>
             <OptionButton
               active={chartFilter === CHART_VIEW.VOLUME}
               onClick={() => {
@@ -140,25 +108,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
               }}
             >
               Volume
-            </OptionButton>
-            <OptionButton
-              active={chartFilter === CHART_VIEW.RATE0}
-              onClick={() => {
-                setTimeWindow(timeframeOptions.WEEK)
-                setChartFilter(CHART_VIEW.RATE0)
-              }}
-            >
-              {pairData.token0 ? formattedSymbol1 + '/' + formattedSymbol0 : '-'}
-            </OptionButton>
-            <OptionButton
-              active={chartFilter === CHART_VIEW.RATE1}
-              onClick={() => {
-                setTimeWindow(timeframeOptions.WEEK)
-                setChartFilter(CHART_VIEW.RATE1)
-              }}
-            >
-              {pairData.token0 ? formattedSymbol0 + '/' + formattedSymbol1 : '-'}
-            </OptionButton>
+          </OptionButton>
           </AutoRow>
           <AutoRow justify="flex-end" gap="6px">
             <OptionButton
@@ -166,19 +116,19 @@ const PairChart = ({ address, color, base0, base1 }) => {
               onClick={() => setTimeWindow(timeframeOptions.WEEK)}
             >
               1W
-            </OptionButton>
+          </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.MONTH}
               onClick={() => setTimeWindow(timeframeOptions.MONTH)}
             >
               1M
-            </OptionButton>
+          </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.ALL_TIME}
               onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
             >
               All
-            </OptionButton>
+          </OptionButton>
           </AutoRow>
         </OptionsRow>
       )}
@@ -242,36 +192,6 @@ const PairChart = ({ address, color, base0, base1 }) => {
         </ResponsiveContainer>
       )}
 
-      {chartFilter === CHART_VIEW.RATE1 &&
-        (hourlyRate1 ? (
-          <ResponsiveContainer aspect={aspect} ref={ref}>
-            <CandleStickChart
-              data={hourlyRate1}
-              base={base0}
-              margin={false}
-              width={width}
-              valueFormatter={valueFormatter}
-            />
-          </ResponsiveContainer>
-        ) : (
-          <LocalLoader />
-        ))}
-
-      {chartFilter === CHART_VIEW.RATE0 &&
-        (hourlyRate0 ? (
-          <ResponsiveContainer aspect={aspect} ref={ref}>
-            <CandleStickChart
-              data={hourlyRate0}
-              base={base1}
-              margin={false}
-              width={width}
-              valueFormatter={valueFormatter}
-            />
-          </ResponsiveContainer>
-        ) : (
-          <LocalLoader />
-        ))}
-
       {chartFilter === CHART_VIEW.VOLUME && (
         <ResponsiveContainer aspect={aspect}>
           <BarChart
@@ -332,4 +252,4 @@ const PairChart = ({ address, color, base0, base1 }) => {
   )
 }
 
-export default PairChart
+export default PoolChart

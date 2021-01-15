@@ -37,45 +37,25 @@ export function getTimeframe(timeWindow) {
   return utcStartTime
 }
 
-export function getPoolLink(token0Address, token1Address = null, remove = false) {
-  if (!token1Address) {
-    return (
-      `https://uniswap.exchange/` +
-      (remove ? `remove` : `add`) +
-      `/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token0Address}/${'ETH'}`
-    )
-  } else {
-    return (
-      `https://uniswap.exchange/` +
-      (remove ? `remove` : `add`) +
-      `/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token0Address}/${
-        token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token1Address
-      }`
-    )
-  }
-}
-
-export function getSwapLink(token0Address, token1Address = null) {
-  if (!token1Address) {
-    return `https://uniswap.exchange/swap?inputCurrency=${token0Address}`
-  } else {
-    return `https://uniswap.exchange/swap?inputCurrency=${
-      token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token0Address
-    }&outputCurrency=${token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token1Address}`
-  }
+export function getPoolLink(tokenAddress, remove = false) {
+  return (
+    `https://deerfi.com/flashloan/` +
+    (remove ? `remove` : `add`) +
+    `/${tokenAddress === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : tokenAddress}/${'ETH'}`
+  )
 }
 
 export function getMiningPoolLink(token0Address) {
-  return `https://app.uniswap.org/#/uni/ETH/${token0Address}`
+  return `https://app.deerfi.com/#/uni/ETH/${token0Address}`
 }
 
-export function getUniswapAppLink(linkVariable) {
-  let baseUniswapUrl = 'https://app.uniswap.org/#/uni'
+export function getDeerfiAppLink(linkVariable) {
+  let baseDeerfiUrl = 'https://app.deerfi.com/#/uni'
   if (!linkVariable) {
-    return baseUniswapUrl
+    return baseDeerfiUrl
   }
 
-  return `${baseUniswapUrl}/ETH/${linkVariable}`
+  return `${baseDeerfiUrl}/ETH/${linkVariable}`
 }
 
 export function localNumber(val) {
@@ -204,10 +184,10 @@ export async function getLiquidityTokenBalanceOvertime(account, timestamps) {
 /**
  * @notice Example query using time travel queries
  * @dev TODO - handle scenario where blocks are not available for a timestamps (e.g. current time)
- * @param {String} pairAddress
+ * @param {String} poolAddress
  * @param {Array} timestamps
  */
-export async function getShareValueOverTime(pairAddress, timestamps) {
+export async function getShareValueOverTime(poolAddress, timestamps) {
   if (!timestamps) {
     const utcCurrentTime = dayjs()
     const utcSevenDaysBack = utcCurrentTime.subtract(8, 'day').unix()
@@ -219,7 +199,7 @@ export async function getShareValueOverTime(pairAddress, timestamps) {
 
   // get historical share values with time travel queries
   let result = await client.query({
-    query: SHARE_VALUE(pairAddress, blocks),
+    query: SHARE_VALUE(poolAddress, blocks),
     fetchPolicy: 'cache-first',
   })
 

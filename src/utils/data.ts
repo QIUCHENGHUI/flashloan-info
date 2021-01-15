@@ -1,10 +1,5 @@
 interface BasicData {
-  token0?: {
-    id: string
-    name: string
-    symbol: string
-  }
-  token1?: {
+  token?: {
     id: string
     name: string
     symbol: string
@@ -19,6 +14,10 @@ const TOKEN_OVERRIDES: { [address: string]: { name: string; symbol: string } } =
     name: 'Ether (Wrapped)',
     symbol: 'ETH',
   },
+  '0xd0a1e359811322d97991e03f863a0c30c2cf029c': {
+    name: 'Ether (Wrapped)',
+    symbol: 'ETH',
+  },
   '0x1416946162b1c2c871a73b07e932d2fb6c932069': {
     name: 'Energi',
     symbol: 'NRGE',
@@ -27,14 +26,9 @@ const TOKEN_OVERRIDES: { [address: string]: { name: string; symbol: string } } =
 
 // override tokens with incorrect symbol or names
 export function updateNameData(data: BasicData): BasicData | undefined {
-  if (data?.token0?.id && Object.keys(TOKEN_OVERRIDES).includes(data.token0.id)) {
-    data.token0.name = TOKEN_OVERRIDES[data.token0.id].name
-    data.token0.symbol = TOKEN_OVERRIDES[data.token0.id].symbol
-  }
-
-  if (data?.token1?.id && Object.keys(TOKEN_OVERRIDES).includes(data.token1.id)) {
-    data.token1.name = TOKEN_OVERRIDES[data.token1.id].name
-    data.token1.symbol = TOKEN_OVERRIDES[data.token1.id].symbol
+  if (data?.token?.id && Object.keys(TOKEN_OVERRIDES).includes(data.token.id)) {
+    data.token.name = TOKEN_OVERRIDES[data.token.id].name
+    data.token.symbol = TOKEN_OVERRIDES[data.token.id].symbol
   }
 
   return data

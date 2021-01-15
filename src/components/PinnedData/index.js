@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { RowBetween, RowFixed } from '../Row'
 import { AutoColumn } from '../Column'
 import { TYPE } from '../../Theme'
-import { useSavedTokens, useSavedPairs } from '../../contexts/LocalStorage'
+import { useSavedTokens, useSavedPools } from '../../contexts/LocalStorage'
 import { Hover } from '..'
 import TokenLogo from '../TokenLogo'
 import AccountSearch from '../AccountSearch'
@@ -48,7 +48,7 @@ const StyledIcon = styled.div`
 `
 
 function PinnedData({ history, open, setSavedOpen }) {
-  const [savedPairs, , removePair] = useSavedPairs()
+  const [savedPools, , removePool] = useSavedPools()
   const [savedTokens, , removeToken] = useSavedTokens()
 
   return !open ? (
@@ -75,30 +75,30 @@ function PinnedData({ history, open, setSavedOpen }) {
       <AccountSearch small={true} />
       <AutoColumn gap="40px" style={{ marginTop: '2rem' }}>
         <AutoColumn gap={'12px'}>
-          <TYPE.main>Pinned Pairs</TYPE.main>
-          {Object.keys(savedPairs).filter((key) => {
-            return !!savedPairs[key]
+          <TYPE.main>Pinned Pools</TYPE.main>
+          {Object.keys(savedPools).filter((key) => {
+            return !!savedPools[key]
           }).length > 0 ? (
-            Object.keys(savedPairs)
+            Object.keys(savedPools)
               .filter((address) => {
-                return !!savedPairs[address]
+                return !!savedPools[address]
               })
               .map((address) => {
-                const pair = savedPairs[address]
+                const pool = savedPools[address]
                 return (
-                  <RowBetween key={pair.address}>
-                    <ButtonFaded onClick={() => history.push('/pair/' + address)}>
+                  <RowBetween key={pool.address}>
+                    <ButtonFaded onClick={() => history.push('/pool/' + address)}>
                       <RowFixed>
                         <TYPE.header>
                           <FormattedName
-                            text={pair.token0Symbol + '/' + pair.token1Symbol}
+                            text={'pool/' + pool.tokenSymbol}
                             maxCharacters={12}
                             fontSize={'12px'}
                           />
                         </TYPE.header>
                       </RowFixed>
                     </ButtonFaded>
-                    <Hover onClick={() => removePair(pair.address)}>
+                    <Hover onClick={() => removePool(pool.address)}>
                       <StyledIcon>
                         <X size={16} />
                       </StyledIcon>
@@ -107,7 +107,7 @@ function PinnedData({ history, open, setSavedOpen }) {
                 )
               })
           ) : (
-            <TYPE.light>Pinned pairs will appear here.</TYPE.light>
+            <TYPE.light>Pinned pools will appear here.</TYPE.light>
           )}
         </AutoColumn>
         <ScrollableDiv gap={'12px'}>

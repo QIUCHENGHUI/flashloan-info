@@ -139,8 +139,8 @@ const TokenChart = ({ address, color, base }) => {
         <RowBetween
           mb={
             chartFilter === CHART_VIEW.LIQUIDITY ||
-            chartFilter === CHART_VIEW.VOLUME ||
-            (chartFilter === CHART_VIEW.PRICE && frequency === DATA_FREQUENCY.LINE)
+              chartFilter === CHART_VIEW.VOLUME ||
+              (chartFilter === CHART_VIEW.PRICE && frequency === DATA_FREQUENCY.LINE)
               ? 40
               : 0
           }
@@ -154,14 +154,14 @@ const TokenChart = ({ address, color, base }) => {
                 style={{ marginRight: '6px' }}
               >
                 Liquidity
-              </OptionButton>
+            </OptionButton>
               <OptionButton
                 active={chartFilter === CHART_VIEW.VOLUME}
                 onClick={() => setChartFilter(CHART_VIEW.VOLUME)}
                 style={{ marginRight: '6px' }}
               >
                 Volume
-              </OptionButton>
+            </OptionButton>
               <OptionButton
                 active={chartFilter === CHART_VIEW.PRICE}
                 onClick={() => {
@@ -169,7 +169,7 @@ const TokenChart = ({ address, color, base }) => {
                 }}
               >
                 Price
-              </OptionButton>
+            </OptionButton>
             </RowFixed>
             {chartFilter === CHART_VIEW.PRICE && (
               <AutoRow gap="4px">
@@ -181,13 +181,13 @@ const TokenChart = ({ address, color, base }) => {
                   }}
                 >
                   D
-                </PriceOption>
+              </PriceOption>
                 <PriceOption
                   active={frequency === DATA_FREQUENCY.HOUR}
                   onClick={() => setFrequency(DATA_FREQUENCY.HOUR)}
                 >
                   H
-                </PriceOption>
+              </PriceOption>
                 <PriceOption
                   active={frequency === DATA_FREQUENCY.LINE}
                   onClick={() => setFrequency(DATA_FREQUENCY.LINE)}
@@ -203,19 +203,19 @@ const TokenChart = ({ address, color, base }) => {
               onClick={() => setTimeWindow(timeframeOptions.WEEK)}
             >
               1W
-            </OptionButton>
+          </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.MONTH}
               onClick={() => setTimeWindow(timeframeOptions.MONTH)}
             >
               1M
-            </OptionButton>
+          </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.ALL_TIME}
               onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
             >
               All
-            </OptionButton>
+          </OptionButton>
           </AutoRow>
         </RowBetween>
       )}
@@ -344,8 +344,8 @@ const TokenChart = ({ address, color, base }) => {
             <CandleStickChart data={priceData} width={width} base={base} />
           </ResponsiveContainer>
         ) : (
-          <LocalLoader />
-        ))}
+            <LocalLoader />
+          ))}
 
       {chartFilter === CHART_VIEW.VOLUME && (
         <ResponsiveContainer aspect={aspect}>

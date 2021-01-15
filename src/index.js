@@ -6,7 +6,7 @@ import ThemeProvider, { GlobalStyle } from './Theme'
 import LocalStorageContextProvider, { Updater as LocalStorageContextUpdater } from './contexts/LocalStorage'
 import TokenDataContextProvider, { Updater as TokenDataContextUpdater } from './contexts/TokenData'
 import GlobalDataContextProvider from './contexts/GlobalData'
-import PairDataContextProvider, { Updater as PairDataContextUpdater } from './contexts/PairData'
+import PoolDataContextProvider, { Updater as PoolDataContextUpdater } from './contexts/PoolData'
 import ApplicationContextProvider from './contexts/Application'
 import UserContextProvider from './contexts/User'
 import App from './App'
@@ -19,8 +19,8 @@ if (typeof GOOGLE_ANALYTICS_ID === 'string') {
     customBrowserType: !isMobile
       ? 'desktop'
       : 'web3' in window || 'ethereum' in window
-      ? 'mobileWeb3'
-      : 'mobileRegular',
+        ? 'mobileWeb3'
+        : 'mobileRegular',
   })
 } else {
   ReactGA.initialize('test', { testMode: true, debug: true })
@@ -32,9 +32,9 @@ function ContextProviders({ children }) {
       <ApplicationContextProvider>
         <TokenDataContextProvider>
           <GlobalDataContextProvider>
-            <PairDataContextProvider>
+            <PoolDataContextProvider>
               <UserContextProvider>{children}</UserContextProvider>
-            </PairDataContextProvider>
+            </PoolDataContextProvider>
           </GlobalDataContextProvider>
         </TokenDataContextProvider>
       </ApplicationContextProvider>
@@ -46,7 +46,7 @@ function Updaters() {
   return (
     <>
       <LocalStorageContextUpdater />
-      <PairDataContextUpdater />
+      <PoolDataContextUpdater />
       <TokenDataContextUpdater />
     </>
   )

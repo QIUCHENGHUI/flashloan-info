@@ -7,7 +7,7 @@ import { Box, Flex, Text } from 'rebass'
 import styled from 'styled-components'
 
 import { CustomLink } from '../Link'
-import { Divider } from '../../components'
+import { Divider } from '..'
 import { withRouter } from 'react-router-dom'
 import { formattedNum, formattedPercent } from '../../utils'
 import DoubleTokenLogo from '../DoubleLogo'
@@ -123,7 +123,7 @@ const FIELD_TO_VALUE = (field, useTracked) => {
   }
 }
 
-function PairList({ pairs, color, disbaleLinks, maxItems = 10, useTracked = false }) {
+function PoolList({ pools, color, disbaleLinks, maxItems = 10, useTracked = false }) {
   const below600 = useMedia('(max-width: 600px)')
   const below740 = useMedia('(max-width: 740px)')
   const below1080 = useMedia('(max-width: 1080px)')
@@ -140,33 +140,33 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10, useTracked = fals
   useEffect(() => {
     setMaxPage(1) // edit this to do modular
     setPage(1)
-  }, [pairs])
+  }, [pools])
 
   useEffect(() => {
-    if (pairs) {
+    if (pools) {
       let extraPages = 1
-      if (Object.keys(pairs).length % ITEMS_PER_PAGE === 0) {
+      if (Object.keys(pools).length % ITEMS_PER_PAGE === 0) {
         extraPages = 0
       }
-      setMaxPage(Math.floor(Object.keys(pairs).length / ITEMS_PER_PAGE) + extraPages)
+      setMaxPage(Math.floor(Object.keys(pools).length / ITEMS_PER_PAGE) + extraPages)
     }
-  }, [ITEMS_PER_PAGE, pairs])
+  }, [ITEMS_PER_PAGE, pools])
 
-  const ListItem = ({ pairAddress, index }) => {
-    const pairData = pairs[pairAddress]
+  const ListItem = ({ poolAddress, index }) => {
+    const poolData = pools[poolAddress]
 
-    if (pairData && pairData.token0 && pairData.token1) {
-      const liquidity = formattedNum(useTracked ? pairData.trackedReserveUSD : pairData.reserveUSD, true)
-      const volume = formattedNum(useTracked ? pairData.oneDayVolumeUSD : pairData.oneDayVolumeUntracked, true)
+    if (poolData && poolData.token) {
+      const liquidity = formattedNum(useTracked ? poolData.trackedReserveUSD : poolData.reserveUSD, true)
+      const volume = formattedNum(useTracked ? poolData.oneDayVolumeUSD : poolData.oneDayVolumeUntracked, true)
       const apy = formattedPercent(
-        ((useTracked ? pairData.oneDayVolumeUSD : pairData.oneDayVolumeUntracked) * 0.003 * 365 * 100) /
-          (useTracked ? pairData.trackedReserveUSD : pairData.reserveUSD)
+        ((useTracked ? poolData.oneDayVolumeUSD : poolData.oneDayVolumeUntracked) * 0.0005 * 365 * 100) /
+        (useTracked ? poolData.trackedReserveUSD : poolData.reserveUSD)
       )
 
-      const weekVolume = formattedNum(useTracked ? pairData.oneWeekVolumeUSD : pairData.oneWeekVolumeUntracked, true)
+      const weekVolume = formattedNum(useTracked ? poolData.oneWeekVolumeUSD : poolData.oneWeekVolumeUntracked, true)
 
       const fees = formattedNum(
-        useTracked ? pairData.oneDayVolumeUSD * 0.003 : pairData.oneDayVolumeUntracked * 0.003,
+        useTracked ? poolData.oneDayVolumeUSD * 0.0005 : poolData.oneDayVolumeUntracked * 0.0005,
         true
       )
 
@@ -176,13 +176,13 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10, useTracked = fals
             {!below600 && <div style={{ marginRight: '20px', width: '10px' }}>{index}</div>}
             <DoubleTokenLogo
               size={below600 ? 16 : 20}
-              a0={pairData.token0.id}
-              a1={pairData.token1.id}
+              a0={poolData.token.id}
+              a1={poolData.token.id}
               margin={!below740}
             />
-            <CustomLink style={{ marginLeft: '20px', whiteSpace: 'nowrap' }} to={'/pair/' + pairAddress} color={color}>
+            <CustomLink style={{ marginLeft: '20px', whiteSpace: 'nowrap' }} to={'/pool/' + poolAddress} color={color}>
               <FormattedName
-                text={pairData.token0.symbol + '-' + pairData.token1.symbol}
+                text={poolData.token.symbol + ' Pool'}
                 maxCharacters={below600 ? 8 : 16}
                 adjustSize={true}
                 link={true}
@@ -201,28 +201,28 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10, useTracked = fals
     }
   }
 
-  const pairList =
-    pairs &&
-    Object.keys(pairs)
+  const poolList =
+    pools &&
+    Object.keys(pools)
       .sort((addressA, addressB) => {
-        const pairA = pairs[addressA]
-        const pairB = pairs[addressB]
+        const poolA = pools[addressA]
+        const poolB = pools[addressB]
         if (sortedColumn === SORT_FIELD.APY) {
-          const apy0 = parseFloat(pairA.oneDayVolumeUSD * 0.003 * 356 * 100) / parseFloat(pairA.reserveUSD)
-          const apy1 = parseFloat(pairB.oneDayVolumeUSD * 0.003 * 356 * 100) / parseFloat(pairB.reserveUSD)
+          const apy0 = parseFloat(poolA.oneDayVolumeUSD * 0.0005 * 356 * 100) / parseFloat(poolA.reserveUSD)
+          const apy1 = parseFloat(poolB.oneDayVolumeUSD * 0.0005 * 356 * 100) / parseFloat(poolB.reserveUSD)
           return apy0 > apy1 ? (sortDirection ? -1 : 1) * 1 : (sortDirection ? -1 : 1) * -1
         }
-        return parseFloat(pairA[FIELD_TO_VALUE(sortedColumn, useTracked)]) >
-          parseFloat(pairB[FIELD_TO_VALUE(sortedColumn, useTracked)])
+        return parseFloat(poolA[FIELD_TO_VALUE(sortedColumn, useTracked)]) >
+          parseFloat(poolB[FIELD_TO_VALUE(sortedColumn, useTracked)])
           ? (sortDirection ? -1 : 1) * 1
           : (sortDirection ? -1 : 1) * -1
       })
       .slice(ITEMS_PER_PAGE * (page - 1), page * ITEMS_PER_PAGE)
-      .map((pairAddress, index) => {
+      .map((poolAddress, index) => {
         return (
-          pairAddress && (
+          poolAddress && (
             <div key={index}>
-              <ListItem key={index} index={(page - 1) * ITEMS_PER_PAGE + index + 1} pairAddress={pairAddress} />
+              <ListItem key={index} index={(page - 1) * ITEMS_PER_PAGE + index + 1} poolAddress={poolAddress} />
               <Divider />
             </div>
           )
@@ -304,7 +304,7 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10, useTracked = fals
         )}
       </DashGrid>
       <Divider />
-      <List p={0}>{!pairList ? <LocalLoader /> : pairList}</List>
+      <List p={0}>{!poolList ? <LocalLoader /> : poolList}</List>
       <PageButtons>
         <div
           onClick={(e) => {
@@ -326,4 +326,4 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10, useTracked = fals
   )
 }
 
-export default withRouter(PairList)
+export default withRouter(PoolList)

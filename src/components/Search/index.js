@@ -7,15 +7,15 @@ import { Search as SearchIcon, X } from 'react-feather'
 import { BasicLink } from '../Link'
 
 import { useAllTokenData, useTokenData } from '../../contexts/TokenData'
-import { useAllPairData, usePairData } from '../../contexts/PairData'
+import { useAllPoolData, usePoolData } from '../../contexts/PoolData'
 import DoubleTokenLogo from '../DoubleLogo'
 import { useMedia } from 'react-use'
-import { useAllPairsInUniswap, useAllTokensInUniswap } from '../../contexts/GlobalData'
-import { OVERVIEW_TOKEN_BLACKLIST, PAIR_BLACKLIST } from '../../constants'
+import { useAllPoolsInDeerfi, useAllTokensInDeerfi } from '../../contexts/GlobalData'
+import { OVERVIEW_TOKEN_BLACKLIST, POOL_BLACKLIST } from '../../constants'
 
 import { transparentize } from 'polished'
 import { client } from '../../apollo/client'
-import { PAIR_SEARCH, TOKEN_SEARCH } from '../../apollo/queries'
+import { POOL_SEARCH, TOKEN_SEARCH } from '../../apollo/queries'
 import FormattedName from '../FormattedName'
 import { TYPE } from '../../Theme'
 import { updateNameData } from '../../utils/data'
@@ -151,20 +151,20 @@ const Blue = styled.span`
 `
 
 export const Search = ({ small = false }) => {
-  let allTokens = useAllTokensInUniswap()
+  let allTokens = useAllTokensInDeerfi()
   const allTokenData = useAllTokenData()
 
-  let allPairs = useAllPairsInUniswap()
-  const allPairData = useAllPairData()
+  let allPools = useAllPoolsInDeerfi()
+  const allPoolData = useAllPoolData()
 
   const [showMenu, toggleMenu] = useState(false)
   const [value, setValue] = useState('')
   const [, toggleShadow] = useState(false)
   const [, toggleBottomShadow] = useState(false)
 
-  // fetch new data on tokens and pairs if needed
+  // fetch new data on tokens and pools if needed
   useTokenData(value)
-  usePairData(value)
+  usePoolData(value)
 
   const below700 = useMedia('(max-width: 700px)')
   const below470 = useMedia('(max-width: 470px)')
@@ -179,7 +179,7 @@ export const Search = ({ small = false }) => {
   }, [value])
 
   const [searchedTokens, setSearchedTokens] = useState([])
-  const [searchedPairs, setSearchedPairs] = useState([])
+  const [searchedPools, setSearchedPools] = useState([])
 
   useEffect(() => {
     async function fetchData() {
@@ -193,18 +193,17 @@ export const Search = ({ small = false }) => {
             },
           })
 
-          let pairs = await client.query({
-            query: PAIR_SEARCH,
+          let pools = await client.query({
+            query: POOL_SEARCH,
             variables: {
               tokens: tokens.data.asSymbol?.map((t) => t.id),
               id: value,
             },
           })
 
-          setSearchedPairs(
-            updateNameData(pairs.data.as0)
-              .concat(updateNameData(pairs.data.as1))
-              .concat(updateNameData(pairs.data.asAddress))
+          setSearchedPools(
+            updateNameData(pools.data.asTokenAddress)
+              .concat(updateNameData(pools.data.asAddress))
           )
           const foundTokens = tokens.data.asSymbol.concat(tokens.data.asAddress).concat(tokens.data.asName)
           setSearchedTokens(foundTokens)
@@ -246,11 +245,11 @@ export const Search = ({ small = false }) => {
       return true
     })
 
-  allPairs = allPairs.concat(
-    searchedPairs.filter((searchedPair) => {
+  allPools = allPools.concat(
+    searchedPools.filter((searchedPool) => {
       let included = false
-      allPairs.map((pair) => {
-        if (pair.id === searchedPair.id) {
+      allPools.map((pool) => {
+        if (pool.id === searchedPool.id) {
           included = true
         }
         return true
@@ -259,13 +258,13 @@ export const Search = ({ small = false }) => {
     })
   )
 
-  let uniquePairs = []
-  let pairsFound = {}
-  allPairs &&
-    allPairs.map((pair) => {
-      if (!pairsFound[pair.id]) {
-        pairsFound[pair.id] = true
-        uniquePairs.push(pair)
+  let uniquePools = []
+  let poolsFound = {}
+  allPools &&
+    allPools.map((pool) => {
+      if (!poolsFound[pool.id]) {
+        poolsFound[pool.id] = true
+        uniquePools.push(pool)
       }
       return true
     })
@@ -315,58 +314,50 @@ export const Search = ({ small = false }) => {
       : []
   }, [allTokenData, uniqueTokens, value])
 
-  const filteredPairList = useMemo(() => {
-    return uniquePairs
-      ? uniquePairs
+  const filteredPoolList = useMemo(() => {
+    return uniquePools
+      ? uniquePools
           .sort((a, b) => {
-            const pairA = allPairData[a.id]
-            const pairB = allPairData[b.id]
-            if (pairA?.trackedReserveETH && pairB?.trackedReserveETH) {
-              return parseFloat(pairA.trackedReserveETH) > parseFloat(pairB.trackedReserveETH) ? -1 : 1
+            const poolA = allPoolData[a.id]
+            const poolB = allPoolData[b.id]
+            if (poolA?.trackedReserveETH && poolB?.trackedReserveETH) {
+              return parseFloat(poolA.trackedReserveETH) > parseFloat(poolB.trackedReserveETH) ? -1 : 1
             }
-            if (pairA?.trackedReserveETH && !pairB?.trackedReserveETH) {
+            if (poolA?.trackedReserveETH && !poolB?.trackedReserveETH) {
               return -1
             }
-            if (!pairA?.trackedReserveETH && pairB?.trackedReserveETH) {
+            if (!poolA?.trackedReserveETH && poolB?.trackedReserveETH) {
               return 1
             }
             return 0
           })
-          .filter((pair) => {
-            if (PAIR_BLACKLIST.includes(pair.id)) {
+          .filter((pool) => {
+            if (POOL_BLACKLIST.includes(pool.id)) {
               return false
             }
             if (value && value.includes(' ')) {
-              const pairA = value.split(' ')[0]?.toUpperCase()
-              const pairB = value.split(' ')[1]?.toUpperCase()
+              const poolA = value.split(' ')[0]?.toUpperCase()
+              const poolB = value.split(' ')[1]?.toUpperCase()
               return (
-                (pair.token0.symbol.includes(pairA) || pair.token0.symbol.includes(pairB)) &&
-                (pair.token1.symbol.includes(pairA) || pair.token1.symbol.includes(pairB))
+                (pool.token.symbol.includes(poolA) || pool.token.symbol.includes(poolB))
               )
             }
             if (value && value.includes('-')) {
-              const pairA = value.split('-')[0]?.toUpperCase()
-              const pairB = value.split('-')[1]?.toUpperCase()
+              const poolA = value.split('-')[0]?.toUpperCase()
+              const poolB = value.split('-')[1]?.toUpperCase()
               return (
-                (pair.token0.symbol.includes(pairA) || pair.token0.symbol.includes(pairB)) &&
-                (pair.token1.symbol.includes(pairA) || pair.token1.symbol.includes(pairB))
+                (pool.token.symbol.includes(poolA) || pool.token.symbol.includes(poolB))
               )
             }
-            const regexMatches = Object.keys(pair).map((field) => {
+            const regexMatches = Object.keys(pool).map((field) => {
               const isAddress = value.slice(0, 2) === '0x'
               if (field === 'id' && isAddress) {
-                return pair[field].match(new RegExp(escapeRegExp(value), 'i'))
+                return pool[field].match(new RegExp(escapeRegExp(value), 'i'))
               }
-              if (field === 'token0') {
+              if (field === 'token') {
                 return (
-                  pair[field].symbol.match(new RegExp(escapeRegExp(value), 'i')) ||
-                  pair[field].name.match(new RegExp(escapeRegExp(value), 'i'))
-                )
-              }
-              if (field === 'token1') {
-                return (
-                  pair[field].symbol.match(new RegExp(escapeRegExp(value), 'i')) ||
-                  pair[field].name.match(new RegExp(escapeRegExp(value), 'i'))
+                  pool[field].symbol.match(new RegExp(escapeRegExp(value), 'i')) ||
+                  pool[field].name.match(new RegExp(escapeRegExp(value), 'i'))
                 )
               }
               return false
@@ -374,7 +365,7 @@ export const Search = ({ small = false }) => {
             return regexMatches.some((m) => m)
           })
       : []
-  }, [allPairData, uniquePairs, value])
+  }, [allPoolData, uniquePools, value])
 
   useEffect(() => {
     if (Object.keys(filteredTokenList).length > 2) {
@@ -385,18 +376,18 @@ export const Search = ({ small = false }) => {
   }, [filteredTokenList])
 
   useEffect(() => {
-    if (Object.keys(filteredPairList).length > 2) {
+    if (Object.keys(filteredPoolList).length > 2) {
       toggleBottomShadow(true)
     } else {
       toggleBottomShadow(false)
     }
-  }, [filteredPairList])
+  }, [filteredPoolList])
 
   const [tokensShown, setTokensShown] = useState(3)
-  const [pairsShown, setPairsShown] = useState(3)
+  const [poolsShown, setPoolsShown] = useState(3)
 
   function onDismiss() {
-    setPairsShown(3)
+    setPoolsShown(3)
     setTokensShown(3)
     toggleMenu(false)
     setValue('')
@@ -411,7 +402,7 @@ export const Search = ({ small = false }) => {
       !(menuRef.current && menuRef.current.contains(e.target)) &&
       !(wrapperRef.current && wrapperRef.current.contains(e.target))
     ) {
-      setPairsShown(3)
+      setPoolsShown(3)
       setTokensShown(3)
       toggleMenu(false)
     }
@@ -437,10 +428,10 @@ export const Search = ({ small = false }) => {
               : below410
               ? 'Search...'
               : below470
-              ? 'Search Uniswap...'
+              ? 'Search Deerfi...'
               : below700
-              ? 'Search pairs and tokens...'
-              : 'Search Uniswap pairs and tokens...'
+              ? 'Search pools and tokens...'
+              : 'Search Deerfi pools and tokens...'
           }
           value={value}
           onChange={(e) => {
@@ -456,35 +447,35 @@ export const Search = ({ small = false }) => {
       </Wrapper>
       <Menu hide={!showMenu} ref={menuRef}>
         <Heading>
-          <Gray>Pairs</Gray>
+          <Gray>Pools</Gray>
         </Heading>
         <div>
-          {filteredPairList && Object.keys(filteredPairList).length === 0 && (
+          {filteredPoolList && Object.keys(filteredPoolList).length === 0 && (
             <MenuItem>
               <TYPE.body>No results</TYPE.body>
             </MenuItem>
           )}
-          {filteredPairList &&
-            filteredPairList.slice(0, pairsShown).map((pair) => {
+          {filteredPoolList &&
+            filteredPoolList.slice(0, poolsShown).map((pool) => {
               //format incorrect names
-              updateNameData(pair)
+              updateNameData(pool)
               return (
-                <BasicLink to={'/pair/' + pair.id} key={pair.id} onClick={onDismiss}>
+                <BasicLink to={'/pool/' + pool.id} key={pool.id} onClick={onDismiss}>
                   <MenuItem>
-                    <DoubleTokenLogo a0={pair?.token0?.id} a1={pair?.token1?.id} margin={true} />
+                    <DoubleTokenLogo a0={pool?.token?.id} a1={pool?.token?.id} margin={true} />
                     <TYPE.body style={{ marginLeft: '10px' }}>
-                      {pair.token0.symbol + '-' + pair.token1.symbol} Pair
+                      {pool.token.symbol + ' Pool'} Pool
                     </TYPE.body>
                   </MenuItem>
                 </BasicLink>
               )
             })}
           <Heading
-            hide={!(Object.keys(filteredPairList).length > 3 && Object.keys(filteredPairList).length >= pairsShown)}
+            hide={!(Object.keys(filteredPoolList).length > 3 && Object.keys(filteredPoolList).length >= poolsShown)}
           >
             <Blue
               onClick={() => {
-                setPairsShown(pairsShown + 5)
+                setPoolsShown(poolsShown + 5)
               }}
             >
               See more...
