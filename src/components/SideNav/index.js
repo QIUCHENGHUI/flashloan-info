@@ -122,18 +122,6 @@ function SideNav({ history }) {
                     Overview
                   </Option>
                 </BasicLink>
-                <BasicLink to="/tokens">
-                  <Option
-                    activeText={
-                      (history.location.pathname.split('/')[1] === 'tokens' ||
-                        history.location.pathname.split('/')[1] === 'token') ??
-                      undefined
-                    }
-                  >
-                    <Disc size={20} style={{ marginRight: '.75rem' }} />
-                    Tokens
-                  </Option>
-                </BasicLink>
                 <BasicLink to="/pools">
                   <Option
                     activeText={

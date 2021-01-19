@@ -6,7 +6,6 @@ import styled from 'styled-components'
 import { AutoRow, RowBetween } from '../components/Row'
 import { AutoColumn } from '../components/Column'
 import PoolList from '../components/PoolList'
-import TopTokenList from '../components/TokenList'
 import TxnList from '../components/TxnList'
 import GlobalChart from '../components/GlobalChart'
 import Search from '../components/Search'
@@ -16,7 +15,6 @@ import { useGlobalData, useGlobalTransactions } from '../contexts/GlobalData'
 import { useAllPoolData } from '../contexts/PoolData'
 import { useMedia } from 'react-use'
 import Panel from '../components/Panel'
-import { useAllTokenData } from '../contexts/TokenData'
 import { formattedNum, formattedPercent } from '../utils'
 import { TYPE, ThemedBackground } from '../Theme'
 import { transparentize } from 'polished'
@@ -47,7 +45,6 @@ const GridRow = styled.div`
 function GlobalPage() {
   // get data for lists and totals
   const allPools = useAllPoolData()
-  const allTokens = useAllTokenData()
   const transactions = useGlobalTransactions()
   const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD } = useGlobalData()
 
@@ -124,15 +121,6 @@ function GlobalPage() {
               </Panel>
             </AutoColumn>
           )}
-          <ListOptions gap="10px" style={{ marginTop: '2rem', marginBottom: '.5rem' }}>
-            <RowBetween>
-              <TYPE.main fontSize={'1.125rem'}>Top Tokens</TYPE.main>
-              <CustomLink to={'/tokens'}>See All</CustomLink>
-            </RowBetween>
-          </ListOptions>
-          <Panel style={{ marginTop: '6px', padding: '1.125rem 0 ' }}>
-            <TopTokenList tokens={allTokens} />
-          </Panel>
           <ListOptions gap="10px" style={{ marginTop: '2rem', marginBottom: '.5rem' }}>
             <RowBetween>
               <TYPE.main fontSize={'1rem'}>Top Pools</TYPE.main>
