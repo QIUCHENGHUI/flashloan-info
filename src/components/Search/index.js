@@ -426,7 +426,7 @@ export const Search = ({ small = false }) => {
               ? 'Search Deerfi...'
               : below700
               ? 'Search pools and tokens...'
-              : 'Search Deerfi pools and tokens...'
+              : 'Search Deerfi flash loan pools and tokens...'
           }
           value={value}
           onChange={(e) => {
