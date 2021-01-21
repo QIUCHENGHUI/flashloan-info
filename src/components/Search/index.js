@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 
-import Row, { RowFixed } from '../Row'
-import TokenLogo from '../TokenLogo'
+import Row from '../Row'
 import { Search as SearchIcon, X } from 'react-feather'
 import { BasicLink } from '../Link'
 
@@ -16,7 +15,6 @@ import { OVERVIEW_TOKEN_BLACKLIST, POOL_BLACKLIST } from '../../constants'
 import { transparentize } from 'polished'
 import { client } from '../../apollo/client'
 import { POOL_SEARCH, TOKEN_SEARCH } from '../../apollo/queries'
-import FormattedName from '../FormattedName'
 import { TYPE } from '../../Theme'
 import { updateNameData } from '../../utils/data'
 
@@ -383,12 +381,10 @@ export const Search = ({ small = false }) => {
     }
   }, [filteredPoolList])
 
-  const [tokensShown, setTokensShown] = useState(3)
   const [poolsShown, setPoolsShown] = useState(3)
 
   function onDismiss() {
     setPoolsShown(3)
-    setTokensShown(3)
     toggleMenu(false)
     setValue('')
   }
@@ -403,7 +399,6 @@ export const Search = ({ small = false }) => {
       !(wrapperRef.current && wrapperRef.current.contains(e.target))
     ) {
       setPoolsShown(3)
-      setTokensShown(3)
       toggleMenu(false)
     }
   }
@@ -476,43 +471,6 @@ export const Search = ({ small = false }) => {
             <Blue
               onClick={() => {
                 setPoolsShown(poolsShown + 5)
-              }}
-            >
-              See more...
-            </Blue>
-          </Heading>
-        </div>
-        <Heading>
-          <Gray>Tokens</Gray>
-        </Heading>
-        <div>
-          {Object.keys(filteredTokenList).length === 0 && (
-            <MenuItem>
-              <TYPE.body>No results</TYPE.body>
-            </MenuItem>
-          )}
-          {filteredTokenList.slice(0, tokensShown).map((token) => {
-            // update displayed names
-            updateNameData({ token0: token })
-            return (
-              <BasicLink to={'/token/' + token.id} key={token.id} onClick={onDismiss}>
-                <MenuItem>
-                  <RowFixed>
-                    <TokenLogo address={token.id} style={{ marginRight: '10px' }} />
-                    <FormattedName text={token.name} maxCharacters={20} style={{ marginRight: '6px' }} />
-                    (<FormattedName text={token.symbol} maxCharacters={6} />)
-                  </RowFixed>
-                </MenuItem>
-              </BasicLink>
-            )
-          })}
-
-          <Heading
-            hide={!(Object.keys(filteredTokenList).length > 3 && Object.keys(filteredTokenList).length >= tokensShown)}
-          >
-            <Blue
-              onClick={() => {
-                setTokensShown(tokensShown + 5)
               }}
             >
               See more...
