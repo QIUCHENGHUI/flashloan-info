@@ -314,7 +314,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
               active={txFilter === TXN_TYPE.ALL}
             >
               All
-          </SortText>
+            </SortText>
             <SortText
               onClick={() => {
                 setTxFilter(TXN_TYPE.FLASHLOAN)
@@ -322,7 +322,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
               active={txFilter === TXN_TYPE.FLASHLOAN}
             >
               FlashLoans
-          </SortText>
+            </SortText>
             <SortText
               onClick={() => {
                 setTxFilter(TXN_TYPE.ADD)
@@ -330,7 +330,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
               active={txFilter === TXN_TYPE.ADD}
             >
               Adds
-          </SortText>
+            </SortText>
             <SortText
               onClick={() => {
                 setTxFilter(TXN_TYPE.REMOVE)
@@ -338,7 +338,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
               active={txFilter === TXN_TYPE.REMOVE}
             >
               Removes
-          </SortText>
+            </SortText>
           </RowFixed>
         )}
 

@@ -56,19 +56,19 @@ const UserChart = ({ account }) => {
               onClick={() => setTimeWindow(timeframeOptions.MONTH)}
             >
               1M
-          </OptionButton>
+            </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.WEEK}
               onClick={() => setTimeWindow(timeframeOptions.WEEK)}
             >
               1W
-          </OptionButton>
+            </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.ALL_TIME}
               onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
             >
               All
-          </OptionButton>
+            </OptionButton>
           </AutoRow>
         </RowBetween>
       )}

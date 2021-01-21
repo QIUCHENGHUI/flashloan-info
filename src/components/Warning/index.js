@@ -96,11 +96,11 @@ export default function Warning({ type, show, setShow, address }) {
                 target="_blank"
               >
                 View {type === 'token' ? 'token' : 'pool'} contract on Etherscan
-            </Link>
+              </Link>
             </Hover>
             <ButtonDark color={'#f82d3a'} style={{ minWidth: '140px' }} onClick={() => setShow(false)}>
               I understand
-          </ButtonDark>
+            </ButtonDark>
           </RowBetween>
         )}
       </AutoColumn>

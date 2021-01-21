@@ -66,10 +66,10 @@ const PoolReturnsChart = ({ account, position }) => {
           <AutoRow gap="6px" style={{ flexWrap: 'nowrap' }}>
             <OptionButton active={chartView === CHART_VIEW.VALUE} onClick={() => setChartView(CHART_VIEW.VALUE)}>
               Liquidity
-          </OptionButton>
+            </OptionButton>
             <OptionButton active={chartView === CHART_VIEW.FEES} onClick={() => setChartView(CHART_VIEW.FEES)}>
               Fees
-          </OptionButton>
+            </OptionButton>
           </AutoRow>
           <AutoRow justify="flex-end" gap="6px">
             <OptionButton
@@ -77,19 +77,19 @@ const PoolReturnsChart = ({ account, position }) => {
               onClick={() => setTimeWindow(timeframeOptions.WEEK)}
             >
               1W
-          </OptionButton>
+            </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.MONTH}
               onClick={() => setTimeWindow(timeframeOptions.MONTH)}
             >
               1M
-          </OptionButton>
+            </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.ALL_TIME}
               onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
             >
               All
-          </OptionButton>
+            </OptionButton>
           </AutoRow>
         </OptionsRow>
       )}

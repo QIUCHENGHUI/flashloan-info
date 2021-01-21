@@ -99,7 +99,7 @@ const PoolChart = ({ address, color, base0, base1 }) => {
               }}
             >
               Liquidity
-          </OptionButton>
+            </OptionButton>
             <OptionButton
               active={chartFilter === CHART_VIEW.VOLUME}
               onClick={() => {
@@ -108,7 +108,7 @@ const PoolChart = ({ address, color, base0, base1 }) => {
               }}
             >
               Volume
-          </OptionButton>
+            </OptionButton>
           </AutoRow>
           <AutoRow justify="flex-end" gap="6px">
             <OptionButton
@@ -116,19 +116,19 @@ const PoolChart = ({ address, color, base0, base1 }) => {
               onClick={() => setTimeWindow(timeframeOptions.WEEK)}
             >
               1W
-          </OptionButton>
+            </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.MONTH}
               onClick={() => setTimeWindow(timeframeOptions.MONTH)}
             >
               1M
-          </OptionButton>
+            </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.ALL_TIME}
               onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
             >
               All
-          </OptionButton>
+            </OptionButton>
           </AutoRow>
         </OptionsRow>
       )}
