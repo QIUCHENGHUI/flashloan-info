@@ -7,7 +7,7 @@ import { Box, Flex, Text } from 'rebass'
 import styled from 'styled-components'
 import Link, { CustomLink } from '../Link'
 import { Divider } from '..'
-import DoubleTokenLogo from '../DoubleLogo'
+import TokenLogo from '../TokenLogo'
 import { withRouter } from 'react-router-dom'
 import { formattedNum, getDeerfiAppLink } from '../../utils'
 import { AutoColumn } from '../Column'
@@ -147,7 +147,7 @@ function MiningPositionList({ miningPositions }) {
         {!below740 && <DataText area="number">{index}</DataText>}
         <DataText area="name" justifyContent="flex-start" alignItems="flex-start">
           <AutoColumn gap="8px" justify="flex-start" align="flex-start">
-            <DoubleTokenLogo size={16} a0={tokenAddress} a1={tokenAddress} margin={!below740} />
+            <TokenLogo size={16} address={tokenAddress} margin={!below740} />
           </AutoColumn>
           <AutoColumn gap="8px" justify="flex-start" style={{ marginLeft: '20px' }}>
             <CustomLink to={'/pool/' + poolAddress}>

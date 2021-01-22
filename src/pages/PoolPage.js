@@ -20,7 +20,6 @@ import { TYPE, ThemedBackground } from '../Theme'
 import { transparentize } from 'polished'
 import CopyHelper from '../components/Copy'
 import { useMedia } from 'react-use'
-import DoubleTokenLogo from '../components/DoubleLogo'
 import TokenLogo from '../components/TokenLogo'
 import { Hover } from '../components'
 import { useEthPrice } from '../contexts/GlobalData'
@@ -224,7 +223,7 @@ function PoolPage({ poolAddress, history }) {
                 <RowFixed style={{ flexWrap: 'wrap', minWidth: '100px' }}>
                   <RowFixed>
                     {token0 && token1 && (
-                      <DoubleTokenLogo a0={token0?.id || ''} a1={token1?.id || ''} size={32} margin={true} />
+                      <TokenLogo address={token0?.id || ''} size={32} margin={true} />
                     )}{' '}
                     <TYPE.main fontSize={below1080 ? '1.5rem' : '2rem'} style={{ margin: '0 1rem' }}>
                       {token0 && token1 ? (
