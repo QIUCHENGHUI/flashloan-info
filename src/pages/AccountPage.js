@@ -13,7 +13,7 @@ import MiningPositionList from '../components/MiningPositionList'
 import { TYPE } from '../Theme'
 import { ButtonDropdown, ButtonLight } from '../components/ButtonStyled'
 import { PageWrapper, ContentWrapper, StyledIcon } from '../components'
-import DoubleTokenLogo from '../components/DoubleLogo'
+import TokenLogo from '../components/TokenLogo'
 import { Bookmark, Activity } from 'react-feather'
 import Link from '../components/Link'
 import { FEE_WARNING_TOKENS } from '../constants'
@@ -206,7 +206,7 @@ function AccountPage({ account }) {
                 )}
                 {activePosition && (
                   <RowFixed>
-                    <DoubleTokenLogo a0={activePosition.pool.token.id} a1={activePosition.pool.token.id} size={16} />
+                    <TokenLogo address={activePosition.pool.token.id} size={16} />
                     <TYPE.body ml={'16px'}>
                       {activePosition.pool.token.symbol} Pool Position
                     </TYPE.body>
@@ -232,7 +232,7 @@ function AccountPage({ account }) {
                             }}
                             key={i}
                           >
-                            <DoubleTokenLogo a0={p.pool.token0.id} a1={p.pool.token1.id} size={16} />
+                            <TokenLogo address={p.pool.token0.id} size={16} />
                             <TYPE.body ml={'16px'}>
                               {p.pool.token0.symbol}-{p.pool.token1.symbol} Position
                             </TYPE.body>

@@ -10,7 +10,7 @@ import { CustomLink } from '../Link'
 import { Divider } from '..'
 import { withRouter } from 'react-router-dom'
 import { formattedNum, formattedPercent } from '../../utils'
-import DoubleTokenLogo from '../DoubleLogo'
+import TokenLogo from '../TokenLogo'
 import FormattedName from '../FormattedName'
 import QuestionHelper from '../QuestionHelper'
 import { TYPE } from '../../Theme'
@@ -174,10 +174,9 @@ function PoolList({ pools, color, disbaleLinks, maxItems = 10, useTracked = fals
         <DashGrid style={{ height: '48px' }} disbaleLinks={disbaleLinks} focus={true}>
           <DataText area="name" fontWeight="500">
             {!below600 && <div style={{ marginRight: '20px', width: '10px' }}>{index}</div>}
-            <DoubleTokenLogo
+            <TokenLogo
               size={below600 ? 16 : 20}
-              a0={poolData.token.id}
-              a1={poolData.token.id}
+              address={poolData.token.id}
               margin={!below740}
             />
             <CustomLink style={{ marginLeft: '20px', whiteSpace: 'nowrap' }} to={'/pool/' + poolAddress} color={color}>

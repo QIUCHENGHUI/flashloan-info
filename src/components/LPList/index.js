@@ -11,7 +11,7 @@ import { Divider } from '..'
 import { withRouter } from 'react-router-dom'
 import { formattedNum } from '../../utils'
 import { TYPE } from '../../Theme'
-import DoubleTokenLogo from '../DoubleLogo'
+import TokenLogo from '../TokenLogo'
 import { RowFixed } from '../Row'
 
 dayjs.extend(utc)
@@ -122,7 +122,7 @@ function LPList({ lps, disbaleLinks, maxItems = 10 }) {
         <DataText>
           <CustomLink area="pool" to={'/pool/' + lp.poolAddress}>
             <RowFixed>
-              {!below600 && <DoubleTokenLogo a0={lp.token} a1={lp.token} size={16} margin={true} />}
+              {!below600 && <TokenLogo address={lp.token} size={16} margin={true} />}
               {lp.poolName}
             </RowFixed>
           </CustomLink>
