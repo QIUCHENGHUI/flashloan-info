@@ -276,13 +276,9 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
         </DataText>
         {!below780 && (
           <>
-            <DataText area="amountOther">
-              {formattedNum(item.token1Amount) + ' '}{' '}
-              <FormattedName text={item.token1Symbol} maxCharacters={5} margin={true} />
-            </DataText>
             <DataText area="amountToken">
-              {formattedNum(item.token0Amount) + ' '}{' '}
-              <FormattedName text={item.token0Symbol} maxCharacters={5} margin={true} />
+              {formattedNum(item.tokenAmount) + ' '}{' '}
+              <FormattedName text={item.tokenSymbol} maxCharacters={5} margin={true} />
             </DataText>
           </>
         )}
@@ -370,21 +366,6 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
           </Flex>
         )}
         <>
-          {!below780 && (
-            <Flex alignItems="center">
-              <ClickableText
-                area="amountOther"
-                color="textDim"
-                onClick={() => {
-                  setSortedColumn(SORT_FIELD.AMOUNT1)
-                  setSortDirection(sortedColumn !== SORT_FIELD.AMOUNT1 ? true : !sortDirection)
-                }}
-              >
-                {symbol1Override ? symbol1Override + ' Amount' : 'Token Amount'}{' '}
-                {sortedColumn === SORT_FIELD.AMOUNT1 ? (sortDirection ? '↑' : '↓') : ''}
-              </ClickableText>
-            </Flex>
-          )}
           {!below1080 && (
             <Flex alignItems="center">
               <TYPE.body area="account">Account</TYPE.body>
