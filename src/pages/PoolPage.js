@@ -186,11 +186,7 @@ function PoolPage({ poolAddress, history }) {
           </TYPE.body>
           {!below600 && <Search small={true} />}
         </RowBetween>
-        <WarningGrouping
-          disabled={
-            !dismissed && listedTokens && !listedTokens.includes(token?.id)
-          }
-        >
+        <WarningGrouping disabled={!dismissed && listedTokens && !listedTokens.includes(token?.id)}>
           <DashboardWrapper>
             <AutoColumn gap="40px" style={{ marginBottom: '1.5rem' }}>
               <div
@@ -203,15 +199,11 @@ function PoolPage({ poolAddress, history }) {
               >
                 <RowFixed style={{ flexWrap: 'wrap', minWidth: '100px' }}>
                   <RowFixed>
-                    {token && (
-                      <TokenLogo address={token?.id || ''} size={'32px'} margin={true} />
-                    )}{' '}
+                    {token && <TokenLogo address={token?.id || ''} size={'32px'} margin={true} />}{' '}
                     <TYPE.main fontSize={below1080 ? '1.5rem' : '2rem'} style={{ margin: '0 1rem' }}>
                       {token ? (
                         <>
-                          <HoverSpan onClick={() => history.push(`/token/${token?.id}`)}>{token.symbol}</HoverSpan>
-                          {' '}
-                          Pool
+                          <HoverSpan onClick={() => history.push(`/token/${token?.id}`)}>{token.symbol}</HoverSpan> Pool
                         </>
                       ) : (
                         ''
