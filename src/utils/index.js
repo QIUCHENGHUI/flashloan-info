@@ -39,9 +39,9 @@ export function getTimeframe(timeWindow) {
 
 export function getPoolLink(tokenAddress, remove = false) {
   return (
-    `https://deerfi.com/flashloan/` +
+    `https://deerfi.com/#/` +
     (remove ? `remove` : `add`) +
-    `/${tokenAddress === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : tokenAddress}/${'ETH'}`
+    `/${tokenAddress === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : tokenAddress}`
   )
 }
 
