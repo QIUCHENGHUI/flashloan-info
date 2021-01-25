@@ -22,7 +22,6 @@ import CopyHelper from '../components/Copy'
 import { useMedia } from 'react-use'
 import TokenLogo from '../components/TokenLogo'
 import { Hover } from '../components'
-import { useEthPrice } from '../contexts/GlobalData'
 import Warning from '../components/Warning'
 import { usePathDismissed, useSavedPools } from '../contexts/LocalStorage'
 
@@ -81,17 +80,6 @@ const TokenDetailsLayout = styled.div`
       align-items: start;
       justify-items: start;
     }
-  }
-`
-
-const FixedPanel = styled(Panel)`
-  width: fit-content;
-  padding: 8px 12px;
-  border-radius: 10px;
-
-  :hover {
-    cursor: pointer;
-    background-color: ${({ theme }) => theme.bg2};
   }
 `
 
@@ -154,9 +142,9 @@ function PoolPage({ poolAddress, history }) {
       : '-'
 
   // token data for usd
-  const [ethPrice] = useEthPrice()
-  const token0USD =
-    token?.derivedETH && ethPrice ? formattedNum(parseFloat(token.derivedETH) * parseFloat(ethPrice), true) : ''
+  // const [ethPrice] = useEthPrice()
+  // const token0USD =
+  //   token?.derivedETH && ethPrice ? formattedNum(parseFloat(token.derivedETH) * parseFloat(ethPrice), true) : ''
 
   // rates
   // const tokenRate = reserve ? formattedNum(reserve) : '-'
@@ -216,7 +204,7 @@ function PoolPage({ poolAddress, history }) {
                 <RowFixed style={{ flexWrap: 'wrap', minWidth: '100px' }}>
                   <RowFixed>
                     {token && (
-                      <TokenLogo address={token?.id || ''} size={32} margin={true} />
+                      <TokenLogo address={token?.id || ''} size={'32px'} margin={true} />
                     )}{' '}
                     <TYPE.main fontSize={below1080 ? '1.5rem' : '2rem'} style={{ margin: '0 1rem' }}>
                       {token ? (
