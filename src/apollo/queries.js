@@ -311,7 +311,7 @@ export const USER_TRANSACTIONS = gql`
       amount
       amountUSD
     }
-    flashLoans(orderBy: timestamp, orderDirection: desc, where: { to: $user }) {
+    flashLoans(orderBy: timestamp, orderDirection: desc, where: { from: $user }) {
       id
       transaction {
         id
