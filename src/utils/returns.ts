@@ -112,8 +112,7 @@ export function getMetricsForPositionWindow(positionT0: Position, positionT1: Po
 
   const difference_fees_token0 = token_amount_t1 - token0_amount_no_fees
 
-  const difference_fees_usd =
-    difference_fees_token0 * positionT1.tokenPriceUSD
+  const difference_fees_usd = difference_fees_token0 * positionT1.tokenPriceUSD
 
   // calculate USD value at t0 and t1 using initial token deposit amounts for asset return
   const assetValueT0 = token_amount_t0 * positionT0.tokenPriceUSD

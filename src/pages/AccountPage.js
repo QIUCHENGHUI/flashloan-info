@@ -228,7 +228,7 @@ function AccountPage({ account }) {
                             }}
                             key={i}
                           >
-                            <TokenLogo address={p.pool.token0.id} size={'16px'} />
+                            <TokenLogo address={p.pool.token.id} size={16} />
                             <TYPE.body ml={'16px'}>
                               {p.pool.token.symbol} Position
                             </TYPE.body>
