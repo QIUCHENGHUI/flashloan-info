@@ -116,7 +116,11 @@ function LPList({ lps, disbaleLinks, maxItems = 10 }) {
           <CustomLink area="pool" to={'/pool/' + lp.poolAddress}>
             <RowFixed>
               {!below600 && <TokenLogo address={lp.token} size={'16px'}/>}
+<<<<<<< HEAD
               <span style={{marginLeft:'8px'}}>{lp.poolName}</span>
+=======
+              {lp.poolName}
+>>>>>>> Update overview page and factory address.
             </RowFixed>
           </CustomLink>
         </DataText>

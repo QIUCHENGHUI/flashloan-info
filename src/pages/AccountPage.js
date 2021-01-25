@@ -228,7 +228,11 @@ function AccountPage({ account }) {
                             }}
                             key={i}
                           >
+<<<<<<< HEAD
                             <TokenLogo address={p.pool.token.id} size={16} />
+=======
+                            <TokenLogo address={p.pool.token0.id} size={'16px'} />
+>>>>>>> Update overview page and factory address.
                             <TYPE.body ml={'16px'}>
                               {p.pool.token.symbol} Position
                             </TYPE.body>

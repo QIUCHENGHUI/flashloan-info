@@ -144,9 +144,9 @@ function PoolPage({ poolAddress, history }) {
 <<<<<<< HEAD
 =======
   // token data for usd
-  const [ethPrice] = useEthPrice()
-  const token0USD =
-    token?.derivedETH && ethPrice ? formattedNum(parseFloat(token.derivedETH) * parseFloat(ethPrice), true) : ''
+  // const [ethPrice] = useEthPrice()
+  // const token0USD =
+  //   token?.derivedETH && ethPrice ? formattedNum(parseFloat(token.derivedETH) * parseFloat(ethPrice), true) : ''
 
   // rates
   // const tokenRate = reserve ? formattedNum(reserve) : '-'
@@ -208,10 +208,14 @@ function PoolPage({ poolAddress, history }) {
                   <RowFixed>
                     {token && (
 <<<<<<< HEAD
+<<<<<<< HEAD
                       <TokenLogo address={token?.id || ''} size={'32px'} margin={true} />
 =======
                       <TokenLogo address={token?.id || ''} size={32} margin={true} />
 >>>>>>> Refine code and fix some data errors.
+=======
+                      <TokenLogo address={token?.id || ''} size={'32px'} margin={true} />
+>>>>>>> Update overview page and factory address.
                     )}{' '}
                     <TYPE.main fontSize={below1080 ? '1.5rem' : '2rem'} style={{ margin: '0 1rem' }}>
                       {token ? (
