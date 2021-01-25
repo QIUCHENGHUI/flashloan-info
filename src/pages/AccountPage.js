@@ -206,7 +206,7 @@ function AccountPage({ account }) {
                 )}
                 {activePosition && (
                   <RowFixed>
-                    <TokenLogo address={activePosition.pool.token.id} size={16} />
+                    <TokenLogo address={activePosition.pool.token.id} size={'16px'} />
                     <TYPE.body ml={'16px'}>
                       {activePosition.pool.token.symbol} Pool Position
                     </TYPE.body>
@@ -232,7 +232,7 @@ function AccountPage({ account }) {
                             }}
                             key={i}
                           >
-                            <TokenLogo address={p.pool.token0.id} size={16} />
+                            <TokenLogo address={p.pool.token0.id} size={'16px'} />
                             <TYPE.body ml={'16px'}>
                               {p.pool.token0.symbol}-{p.pool.token1.symbol} Position
                             </TYPE.body>

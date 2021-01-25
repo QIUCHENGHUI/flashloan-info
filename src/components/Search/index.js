@@ -457,9 +457,9 @@ export const Search = ({ small = false }) => {
               return (
                 <BasicLink to={'/pool/' + pool.id} key={pool.id} onClick={onDismiss}>
                   <MenuItem>
-                    <TokenLogo address={pool?.token?.id} margin={true} />
+                    <TokenLogo address={pool?.token?.id} />
                     <TYPE.body style={{ marginLeft: '10px' }}>
-                      {pool.token.symbol + ' Pool'} Pool
+                      {pool.token.symbol + ' Pool'}
                     </TYPE.body>
                   </MenuItem>
                 </BasicLink>
