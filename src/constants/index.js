@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 export const FACTORY_ADDRESS = '0xa22F8cf50D9827Daef24dCb5BAC92C147a9D342e'
-=======
-export const FACTORY_ADDRESS = '0x60Ba868E317079eeB58b07EeFf413d7868A5408c'
->>>>>>> Update factory address.
-=======
-export const FACTORY_ADDRESS = '0xa22F8cf50D9827Daef24dCb5BAC92C147a9D342e'
->>>>>>> Update overview page and factory address.
 
 export const BUNDLE_ID = '1'
 

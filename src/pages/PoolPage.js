@@ -141,8 +141,6 @@ function PoolPage({ poolAddress, history }) {
         : formattedNum(oneDayVolumeUSD * 0.0005, true)
       : '-'
 
-<<<<<<< HEAD
-=======
   // token data for usd
   // const [ethPrice] = useEthPrice()
   // const token0USD =
@@ -154,7 +152,6 @@ function PoolPage({ poolAddress, history }) {
   // formatted symbols for overflow
   // const formattedSymbol = token?.symbol.length > 6 ? token?.symbol.slice(0, 5) + '...' : token?.symbol
 
->>>>>>> Refine code and fix some data errors.
   const below1080 = useMedia('(max-width: 1080px)')
   const below900 = useMedia('(max-width: 900px)')
   const below600 = useMedia('(max-width: 600px)')
@@ -207,15 +204,7 @@ function PoolPage({ poolAddress, history }) {
                 <RowFixed style={{ flexWrap: 'wrap', minWidth: '100px' }}>
                   <RowFixed>
                     {token && (
-<<<<<<< HEAD
-<<<<<<< HEAD
                       <TokenLogo address={token?.id || ''} size={'32px'} margin={true} />
-=======
-                      <TokenLogo address={token?.id || ''} size={32} margin={true} />
->>>>>>> Refine code and fix some data errors.
-=======
-                      <TokenLogo address={token?.id || ''} size={'32px'} margin={true} />
->>>>>>> Update overview page and factory address.
                     )}{' '}
                     <TYPE.main fontSize={below1080 ? '1.5rem' : '2rem'} style={{ margin: '0 1rem' }}>
                       {token ? (
@@ -257,31 +246,6 @@ function PoolPage({ poolAddress, history }) {
                 </RowFixed>
               </div>
             </AutoColumn>
-<<<<<<< HEAD
-=======
-            {/* <AutoRow
-              gap="6px"
-              style={{
-                width: 'fit-content',
-                marginTop: below900 ? '1rem' : '0',
-                marginBottom: below900 ? '0' : '2rem',
-                flexWrap: 'wrap',
-              }}
-            >
-              <FixedPanel onClick={() => history.push(`/token/${token?.id}`)}>
-                <RowFixed>
-                  <TokenLogo address={token?.id} size={'16px'} />
-                  <TYPE.main fontSize={'16px'} lineHeight={1} fontWeight={500} ml={'4px'}>
-                    {token
-                      ? `1 ${formattedSymbol} = ${tokenRate} ${formattedSymbol} ${
-                          parseFloat(token?.derivedETH) ? '(' + token0USD + ')' : ''
-                        }`
-                      : '-'}
-                  </TYPE.main>
-                </RowFixed>
-              </FixedPanel>
-            </AutoRow> */}
->>>>>>> Refine code and fix some data errors.
             <>
               {!below1080 && (
                 <RowFixed>
