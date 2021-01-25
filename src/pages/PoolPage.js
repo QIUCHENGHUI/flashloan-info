@@ -141,17 +141,6 @@ function PoolPage({ poolAddress, history }) {
         : formattedNum(oneDayVolumeUSD * 0.0005, true)
       : '-'
 
-  // token data for usd
-  // const [ethPrice] = useEthPrice()
-  // const token0USD =
-  //   token?.derivedETH && ethPrice ? formattedNum(parseFloat(token.derivedETH) * parseFloat(ethPrice), true) : ''
-
-  // rates
-  // const tokenRate = reserve ? formattedNum(reserve) : '-'
-
-  // formatted symbols for overflow
-  // const formattedSymbol = token?.symbol.length > 6 ? token?.symbol.slice(0, 5) + '...' : token?.symbol
-
   const below1080 = useMedia('(max-width: 1080px)')
   const below900 = useMedia('(max-width: 900px)')
   const below600 = useMedia('(max-width: 600px)')
