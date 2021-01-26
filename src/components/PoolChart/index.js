@@ -32,8 +32,7 @@ const OptionsRow = styled.div`
 const CHART_VIEW = {
   VOLUME: 'Volume',
   LIQUIDITY: 'Liquidity',
-  RATE0: 'Rate 0',
-  RATE1: 'Rate 1',
+  RATE: 'Rate',
 }
 
 const PoolChart = ({ address, color, base0, base1 }) => {

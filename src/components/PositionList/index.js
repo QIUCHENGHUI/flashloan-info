@@ -146,7 +146,7 @@ function PositionList({ positions }) {
         {!below740 && <DataText area="number">{index}</DataText>}
         <DataText area="name" justifyContent="flex-start" alignItems="flex-start">
           <AutoColumn gap="8px" justify="flex-start" align="flex-start">
-            <TokenLogo size={16} address={position.pool.token.id} margin={!below740} />
+            <TokenLogo size={'16px'} address={position.pool.token.id} />
           </AutoColumn>
           <AutoColumn gap="8px" justify="flex-start" style={{ marginLeft: '20px' }}>
             <CustomLink to={'/pool/' + position.pool.id}>
@@ -203,7 +203,7 @@ function PositionList({ positions }) {
                   <TYPE.small fontWeight={400}>
                     {parseFloat(position.pool.token.derivedETH)
                       ? formattedNum(
-                          position?.fees.sum / (parseFloat(position.pool.token.derivedETH) * ethPrice) / 2,
+                          position?.fees.sum / (parseFloat(position.pool.token.derivedETH) * ethPrice),
                           false,
                           true
                         )

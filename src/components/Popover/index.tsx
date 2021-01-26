@@ -52,12 +52,6 @@ export default function Popover({ content, show, children, placement = 'auto' }:
       <Portal>
         <PopoverContainer show={show} ref={setPopperElement} style={styles.popper} {...attributes.popper}>
           {content}
-          {/* <Arrow
-            className={`arrow-${attributes.popper?.['data-popper-placement'] ?? ''}`}
-            ref={setArrowElement}
-            style={styles.arrow}
-            {...attributes.arrow}
-          /> */}
         </PopoverContainer>
       </Portal>
     </>

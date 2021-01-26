@@ -21,11 +21,9 @@ interface Position {
   pool: any
   liquidityTokenBalance: number
   liquidityTokenTotalSupply: number
-  reserve0: number
-  reserve1: number
+  reserve: number
   reserveUSD: number
-  token0PriceUSD: number
-  token1PriceUSD: number
+  tokenPriceUSD: number
 }
 
 const PRICE_DISCOVERY_START_TIMESTAMP = 1589747086
@@ -98,32 +96,28 @@ export function getMetricsForPositionWindow(positionT0: Position, positionT1: Po
   const t1Ownership = positionT0.liquidityTokenBalance / positionT1.liquidityTokenTotalSupply
 
   // get starting amounts of token0 and token1 deposited by LP
-  const token0_amount_t0 = t0Ownership * positionT0.reserve0
-  const token1_amount_t0 = t0Ownership * positionT0.reserve1
+  const token_amount_t0 = t0Ownership * positionT0.reserve
 
   // get current token values
-  const token0_amount_t1 = t1Ownership * positionT1.reserve0
-  const token1_amount_t1 = t1Ownership * positionT1.reserve1
+  const token_amount_t1 = t1Ownership * positionT1.reserve
 
-  // calculate squares to find imp loss and fee differences
-  const sqrK_t0 = Math.sqrt(token0_amount_t0 * token1_amount_t0)
+  // find imp loss and fee differences
+  const K_t0 = token_amount_t0
   // eslint-disable-next-line eqeqeq
-  const priceRatioT1 = positionT1.token0PriceUSD != 0 ? positionT1.token1PriceUSD / positionT1.token0PriceUSD : 0
+  const priceRatioT1 = positionT1.tokenPriceUSD != 0 ? positionT1.tokenPriceUSD / positionT1.tokenPriceUSD : 0
 
-  const token0_amount_no_fees = positionT1.token1PriceUSD && priceRatioT1 ? sqrK_t0 * Math.sqrt(priceRatioT1) : 0
-  const token1_amount_no_fees =
-    Number(positionT1.token1PriceUSD) && priceRatioT1 ? sqrK_t0 / Math.sqrt(priceRatioT1) : 0
-  const no_fees_usd =
-    token0_amount_no_fees * positionT1.token0PriceUSD + token1_amount_no_fees * positionT1.token1PriceUSD
+  const token0_amount_no_fees = positionT1.tokenPriceUSD && priceRatioT1 ? K_t0 * priceRatioT1 : 0
 
-  const difference_fees_token0 = token0_amount_t1 - token0_amount_no_fees
-  const difference_fees_token1 = token1_amount_t1 - token1_amount_no_fees
+  const no_fees_usd = token0_amount_no_fees * positionT1.tokenPriceUSD
+
+  const difference_fees_token0 = token_amount_t1 - token0_amount_no_fees
+
   const difference_fees_usd =
-    difference_fees_token0 * positionT1.token0PriceUSD + difference_fees_token1 * positionT1.token1PriceUSD
+    difference_fees_token0 * positionT1.tokenPriceUSD
 
   // calculate USD value at t0 and t1 using initial token deposit amounts for asset return
-  const assetValueT0 = token0_amount_t0 * positionT0.token0PriceUSD + token1_amount_t0 * positionT0.token1PriceUSD
-  const assetValueT1 = token0_amount_t0 * positionT1.token0PriceUSD + token1_amount_t0 * positionT1.token1PriceUSD
+  const assetValueT0 = token_amount_t0 * positionT0.tokenPriceUSD
+  const assetValueT1 = token_amount_t1 * positionT1.tokenPriceUSD
 
   const imp_loss_usd = no_fees_usd - assetValueT1
   const DEERFI_RETURN = difference_fees_usd + imp_loss_usd
@@ -255,11 +249,9 @@ export async function getLPReturnsOnPool(user: string, pool, ethPrice: number, s
     pool,
     liquidityTokenBalance: snapshots[snapshots.length - 1]?.liquidityTokenBalance,
     liquidityTokenTotalSupply: pool.totalSupply,
-    reserve0: pool.reserve0,
-    reserve1: pool.reserve1,
+    reserve: pool.reserve,
     reserveUSD: pool.reserveUSD,
-    token0PriceUSD: pool.token0.derivedETH * ethPrice,
-    token1PriceUSD: pool.token1.derivedETH * ethPrice,
+    tokenPriceUSD: pool.token.derivedETH * ethPrice,
   }
 
   for (const index in snapshots) {

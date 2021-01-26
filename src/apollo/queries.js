@@ -311,7 +311,7 @@ export const USER_TRANSACTIONS = gql`
       amount
       amountUSD
     }
-    flashLoans(orderBy: timestamp, orderDirection: desc, where: { to: $user }) {
+    flashLoans(orderBy: timestamp, orderDirection: desc, where: { from: $user }) {
       id
       transaction {
         id
@@ -722,8 +722,7 @@ export const FILTERED_TRANSACTIONS = gql`
       }
       to
       liquidity
-      amount0
-      amount1
+      amount
       amountUSD
     }
     burns(first: 20, where: { pool_in: $allPools }, orderBy: timestamp, orderDirection: desc) {
@@ -739,8 +738,7 @@ export const FILTERED_TRANSACTIONS = gql`
       }
       sender
       liquidity
-      amount0
-      amount1
+      amount
       amountUSD
     }
     flashLoans(first: 30, where: { pool_in: $allPools }, orderBy: timestamp, orderDirection: desc) {

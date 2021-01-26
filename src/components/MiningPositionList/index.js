@@ -147,7 +147,7 @@ function MiningPositionList({ miningPositions }) {
         {!below740 && <DataText area="number">{index}</DataText>}
         <DataText area="name" justifyContent="flex-start" alignItems="flex-start">
           <AutoColumn gap="8px" justify="flex-start" align="flex-start">
-            <TokenLogo size={16} address={tokenAddress} margin={!below740} />
+            <TokenLogo size={'16px'} address={tokenAddress} />
           </AutoColumn>
           <AutoColumn gap="8px" justify="flex-start" style={{ marginLeft: '20px' }}>
             <CustomLink to={'/pool/' + poolAddress}>

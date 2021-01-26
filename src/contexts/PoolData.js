@@ -433,30 +433,23 @@ const getHourlyRateData = async (poolAddress, startTime, latestBlock) => {
       if (timestamp) {
         values.push({
           timestamp,
-          rate0: parseFloat(result[row]?.token0Price),
-          rate1: parseFloat(result[row]?.token1Price),
+          rate: parseFloat(result[row]?.tokenPrice),
         })
       }
     }
 
-    let formattedHistoryRate0 = []
-    let formattedHistoryRate1 = []
+    let formattedHistoryRate = []
 
     // for each hour, construct the open and close price
     for (let i = 0; i < values.length - 1; i++) {
-      formattedHistoryRate0.push({
+      formattedHistoryRate.push({
         timestamp: values[i].timestamp,
-        open: parseFloat(values[i].rate0),
-        close: parseFloat(values[i + 1].rate0),
-      })
-      formattedHistoryRate1.push({
-        timestamp: values[i].timestamp,
-        open: parseFloat(values[i].rate1),
-        close: parseFloat(values[i + 1].rate1),
+        open: parseFloat(values[i].rate),
+        close: parseFloat(values[i + 1].rate),
       })
     }
 
-    return [formattedHistoryRate0, formattedHistoryRate1]
+    return [formattedHistoryRate]
   } catch (e) {
     console.log(e)
     return [[], []]

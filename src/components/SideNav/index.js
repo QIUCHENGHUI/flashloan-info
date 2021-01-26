@@ -156,11 +156,6 @@ function SideNav({ history }) {
                 Deerfi.com
               </Link>
             </HeaderText>
-            {/* <HeaderText>
-              <Link href="https://deerfi.com/docs/v1" target="_blank">
-                Docs
-              </Link>
-            </HeaderText> */}
             <HeaderText>
               <Link href="https://discord.gg/SHdfFgX" target="_blank">
                 Discord

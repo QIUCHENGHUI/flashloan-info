@@ -39,9 +39,9 @@ export function getTimeframe(timeWindow) {
 
 export function getPoolLink(tokenAddress, remove = false) {
   return (
-    `https://deerfi.com/flashloan/` +
+    `https://deerfi.com/#/` +
     (remove ? `remove` : `add`) +
-    `/${tokenAddress === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : tokenAddress}/${'ETH'}`
+    `/${tokenAddress === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : tokenAddress}`
   )
 }
 
@@ -188,7 +188,7 @@ export async function getLiquidityTokenBalanceOvertime(account, timestamps) {
  * @param {Array} timestamps
  */
 export async function getShareValueOverTime(poolAddress, timestamps) {
-  if (!timestamps) {
+  if (!timestamps || !timestamps.length) {
     const utcCurrentTime = dayjs()
     const utcSevenDaysBack = utcCurrentTime.subtract(8, 'day').unix()
     timestamps = getTimestampRange(utcSevenDaysBack, 86400, 7)
@@ -207,20 +207,17 @@ export async function getShareValueOverTime(poolAddress, timestamps) {
   for (var row in result?.data) {
     let timestamp = row.split('t')[1]
     let sharePriceUsd = parseFloat(result.data[row]?.reserveUSD) / parseFloat(result.data[row]?.totalSupply)
-    if (timestamp) {
+    if (timestamp && result.data[row]) {
       values.push({
         timestamp,
         sharePriceUsd,
         totalSupply: result.data[row].totalSupply,
-        reserve0: result.data[row].reserve0,
-        reserve1: result.data[row].reserve1,
+        reserve: result.data[row].reserve,
         reserveUSD: result.data[row].reserveUSD,
-        token0DerivedETH: result.data[row].token0.derivedETH,
-        token1DerivedETH: result.data[row].token1.derivedETH,
+        tokenDerivedETH: result.data[row].token.derivedETH,
         roiUsd: values && values[0] ? sharePriceUsd / values[0]['sharePriceUsd'] : 1,
         ethPrice: 0,
-        token0PriceUSD: 0,
-        token1PriceUSD: 0,
+        tokenPriceUSD: 0,
       })
     }
   }
@@ -229,10 +226,9 @@ export async function getShareValueOverTime(poolAddress, timestamps) {
   let index = 0
   for (var brow in result?.data) {
     let timestamp = brow.split('b')[1]
-    if (timestamp) {
+    if (timestamp && result.data[brow] && values[index]) {
       values[index].ethPrice = result.data[brow].ethPrice
-      values[index].token0PriceUSD = result.data[brow].ethPrice * values[index].token0DerivedETH
-      values[index].token1PriceUSD = result.data[brow].ethPrice * values[index].token1DerivedETH
+      values[index].tokenPriceUSD = result.data[brow].ethPrice * values[index].tokenDerivedETH
       index += 1
     }
   }

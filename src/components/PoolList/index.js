@@ -125,7 +125,6 @@ const FIELD_TO_VALUE = (field, useTracked) => {
 
 function PoolList({ pools, color, disbaleLinks, maxItems = 10, useTracked = false }) {
   const below600 = useMedia('(max-width: 600px)')
-  const below740 = useMedia('(max-width: 740px)')
   const below1080 = useMedia('(max-width: 1080px)')
 
   // pagination
@@ -175,9 +174,8 @@ function PoolList({ pools, color, disbaleLinks, maxItems = 10, useTracked = fals
           <DataText area="name" fontWeight="500">
             {!below600 && <div style={{ marginRight: '20px', width: '10px' }}>{index}</div>}
             <TokenLogo
-              size={below600 ? 16 : 20}
+              size={below600 ? '16px' : '20px'}
               address={poolData.token.id}
-              margin={!below740}
             />
             <CustomLink style={{ marginLeft: '20px', whiteSpace: 'nowrap' }} to={'/pool/' + poolAddress} color={color}>
               <FormattedName
