@@ -264,7 +264,7 @@ async function getGlobalData(ethPrice, oldEthPrice) {
     })
     const twoWeekData = twoWeekResult.data.flashLoanFactories[0]
 
-    if (data && oneDayData && twoDayData && twoWeekData) {
+    if (data && oneDayData && twoDayData) {
       let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
         data.totalVolumeUSD,
         oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
@@ -273,8 +273,8 @@ async function getGlobalData(ethPrice, oldEthPrice) {
 
       const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
         data.totalVolumeUSD,
-        oneWeekData.totalVolumeUSD,
-        twoWeekData.totalVolumeUSD
+        oneWeekData?.totalVolumeUSD ? oneWeekData.totalVolumeUSD : 0,
+        twoWeekData?.totalVolumeUSD ? twoWeekData.totalVolumeUSD : 0
       )
 
       const [oneDayTxns, txnChange] = get2DayPercentChange(
